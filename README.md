@@ -20,7 +20,7 @@ This device has 30 Inputs/Outputs that can be set as different functions
  
 [Back side stripboard](https://github.com/GeertGiebens/LocoNet_IO/blob/master/LOCONET%20IO%20Stripboard%20backside.png)
   
-[Foto PCB](https://github.com/GeertGiebens/LocoNet_IO/blob/master/LocoNet%20foto%20PCB.png)
+[Foto stripboard](https://github.com/GeertGiebens/LocoNet_IO/blob/master/LocoNet%20foto%20PCB.png)
  
   
   # Software:
