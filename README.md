@@ -26,3 +26,7 @@ This device has 30 Inputs/Outputs that can be set as different functions
   # Software:
   
 [Hardware <--> INTERRUPT <--> Software](https://github.com/GeertGiebens/LocoNet_IO/blob/master/LOCONET%20INTERRUPT%20PROGRAM.png)
+
+...
+under construction (jan 2018)
+...
