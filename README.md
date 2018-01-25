@@ -4,6 +4,7 @@ LocoNet In/Out device with PIC microcontroller for DIY projects.
 Written in ASSEMBLER for PIC 18F4620 MicroController. 
 
 
+# Hardware:
 
 This device has 30 inputs / outputs that can be set as different functions:
 
