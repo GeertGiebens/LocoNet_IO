@@ -8,7 +8,7 @@ This device has 30 Inputs/Outputs that can be set as different functions
 
 # Hardware:
 
-[[(https://github.com/GeertGiebens/LocoNet_IO/blob/master/LOCONET%20IN%20UIT.png]]
+[[https://github.com/GeertGiebens/LocoNet_IO/blob/master/LOCONET%20IN%20UIT.png]]
   
 [Components needed to communicate with LocoNet](https://github.com/GeertGiebens/LocoNet_IO/blob/master/LOCONET%20HARDWARE.png)
  
