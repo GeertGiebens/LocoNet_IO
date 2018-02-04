@@ -32,6 +32,7 @@ I explain here the relation between hardware and software interrupt program.
 Main program must first initiate LocoNet communication:  ‘CALL  INIT_LOCONET’
 
 For the communication with LocoNet bus I use hardware inside de microcontroller. The hardware reduce a lot of software code:
+
 -Hardware comparator:  detect  when LocoNet signal is goes below 4V, the output comparator goes to hardware byte-receiver.
 
 -Hardware Timer (T1) for keep time of Linebreak  and CD BackOff.
