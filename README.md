@@ -55,7 +55,7 @@ Timer1 interrupt:
 
 -Interrupt from CD BackOff time: if there is no new data to send --> restart timer with new CD BackOff time.
 
-(I use for the CD BackOff time always a fixed time and a variable time consisting of CD+MD+PD   1200µs+360µs+random(1µs-1024µs). The  timer restart always with new CD BackOff time: CD+MD+PD (PD with new random time).  Device continues to try to gain access to LocoNet!)
+(I use for the CD BackOff time always a fixed time and a variable time consisting of CD+MD+PD  --> 1200µs+360µs+random(1µs-1024µs). The  timer restart always with new CD BackOff time: CD+MD+PD (PD with new random time).  Device continues to try to gain access to LocoNet!)
 
 Byte-receiver interrupt:
 
