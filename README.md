@@ -50,6 +50,7 @@ For the communication with LocoNet bus I use hardware inside de microcontroller.
 There are 2 interrupts in the communication part of LocoNet:
 
 Timer1 interrupt:
+
 -Interrupt from LineBreak send by this device: then start timer with new CD BackOff time.
 
 -Interrupt from CD BackOff time: if there is no new data to send --> restart timer with new CD BackOff time.
@@ -57,7 +58,9 @@ Timer1 interrupt:
 (I use for the CD BackOff time always a fixed time and a variable time consisting of CD+MD+PD   1200µs+360µs+random(1µs-1024µs). The  timer restart always with new CD BackOff time: CD+MD+PD (PD with new random time).  Device continues to try to gain access to LocoNet!)
 
 Byte-receiver interrupt:
+
 If the read Byte is a Opcode (bit7=‘1’), the interrupt know how much bytes there will follow. The read bytes are stored in a LocoNet receive buffer.  After read the last byte and the Error check is OK, a flag is SET so the MAIN program now that there is new LocoNet data.
+
 If this device is sending data through the transmitter, this data is also read by the receiver. The receiver interrupt also regulate the next Byte to send. (The first Byte to send is started after Timer1 CD BackOff time). To check if there is ‘COLLISION’, the sending Byte must be the same with the received Byte. If not, then send a ‘Line Break’. The LocoNet data must then be resend.
 
   
