@@ -49,19 +49,21 @@ Main program must first initiate LocoNet communication:  ‘CALL  INIT_LOCONET�
 
 For the communication with LocoNet bus I use hardware inside de microcontroller. The hardware reduce a lot of software code:
 
--Hardware comparator:  detect  when LocoNet signal is goes below 4V, the output comparator goes to hardware byte-receiver.
+* Hardware comparator:  detect  when LocoNet signal is goes below 4V, the output comparator goes to hardware byte-receiver.
 
--Hardware Timer (T1) for keep time of Linebreak  and CD BackOff.
+* Hardware Timer (T1) for keep time of Linebreak  and CD BackOff.
 
--Hardware Timer (T3) for Random generator. Used for calculate new CD BackOff time.
+* Hardware Timer (T3) for Random generator. Used for calculate new CD BackOff time.
 
--Hardware Byte-transmitter for sending LocoNet data bytes.
+* Hardware Byte-transmitter for sending LocoNet data bytes.
 
--Hardware Byte-receiver for reception LocoNet data bytes .
+* Hardware Byte-receiver for reception LocoNet data bytes .
 
--Hardware detect LocoNet is ‘IDLE’ --> register: BAUDCON,RCIDL=’0’. No receiving data.
+* Hardware detect LocoNet is ‘IDLE’ --> register: BAUDCON,RCIDL=’0’. No receiving data.
 
--Hardware detect  ‘Linebreak’ --> register: RCSTA,FERR=’1’. If another device send a LineBreak when this device read bit’s, then Byte-receiver have a framing error.
+* Hardware detect  ‘Linebreak’ --> register: RCSTA,FERR=’1’. If another device send a LineBreak when this device read bit’s, then Byte-receiver have a framing error.
+
+---
 
 There are 2 interrupts in the communication part of LocoNet:
 
