@@ -10,7 +10,7 @@ The goal of this project is a simple LocoNet device for 30 Inputs or Outputs. Yo
 
 The hardware is very simple for DIY projects. You can perform it with stripboard or with PCB board. 
 
-## Wat can you do with it:
+## What can you do with it:
 
 ### You can choose between different  inputs functions:
 
