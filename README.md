@@ -14,9 +14,9 @@ The hardware is very simple for DIY projects. You can perform it with stripboard
 
 ### You can choose between different  inputs functions:
 
-- TOGLE SWITCH:   CLOSED--> OPC_SW_REQ (ADRES+DIR=1) / OPEN--> OPC_SW_REQ(ADRES+DIR=0)  (AND OPTIONAL:  OPC_INPUT_REP() for block detector)
+- TOGLE SWITCH:   CLOSED--> OPC_SW_REQ (ADRES+DIR=1)  /  OPEN--> OPC_SW_REQ(ADRES+DIR=0)  (AND OPTIONAL:  OPC_INPUT_REP(...) for block detector)
 
-- PUSH BUTTON SWITCH:   PRESSED--> OPC_SW_REQ (ADRES+DIR=1) / PRESSED AGAIN --> OPC_SW_REQ(ADRES+DIR=0) and so on …
+- PUSH BUTTON SWITCH:   PRESSED--> OPC_SW_REQ (ADRES+DIR=1)  /  PRESSED AGAIN --> OPC_SW_REQ(ADRES+DIR=0) and so on …
 
 - PUSH BUTTON SWITCH ON:   PRESSED--> OPC_SW_REQ (ADRES+DIR=1)
 
@@ -29,7 +29,7 @@ The hardware is very simple for DIY projects. You can perform it with stripboard
 
 - RELAY: OPC_SW_REQ(ADRES+DIR=1) then output is 'ON' / OPC_SW_REQ(ADRES+DIR=0) then output is 'OFF' 
 
-- COIL1: OPC_SW_REQ(ADRES+DIR=1) then output1is 'ON' for 1-255ms (=parameter)
+- COIL1: OPC_SW_REQ(ADRES+DIR=1) then output1 is 'ON' for 1-255ms (=parameter)
 
 - COIL2: OPC_SW_REQ((ADRES+DIR=0) then output2 is 'ON' for 1-255ms (=parameter)
 
