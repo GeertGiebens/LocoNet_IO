@@ -23,7 +23,7 @@ The hardware is very simple for DIY projects. You can perform it with stripboard
 - PUSH BUTTON SWITCH OFF:   PRESSED--> OPC_SW_REQ (ADRES+DIR=0)
 
 - PUSH BUTTON SWITCH ON/OFF:  PRESSED--> OPC_SW_REQ(ADRES1+DIR(‘0’ OR ‘1’)) + OPC_SW_REQ(ADRES2+DIR(‘0’ OR ‘1’)) and so on till OPC_SW_REQ(ADRES12+DIR(‘0’ OR ‘1’)) (if  needed)
-
+ 
  
 ### Or you can choose between different output functions: 
 
@@ -40,7 +40,7 @@ The hardware is very simple for DIY projects. You can perform it with stripboard
 
 - SERVO: OPC_SW_REQ(ADRES+DIR=1) then servo is in state1 (parameter1) / OPC_SW_REQ(ADRES+DIR=0) then servo is in state2 (parameter2)
 
-Each output function has various parameters, later more about it. 
+Each output function has various parameters, later more about it. Outputs with Relay,Coil requires a extra 5V relay board.
 
 
 
