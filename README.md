@@ -40,7 +40,7 @@ The hardware is very simple for DIY projects. You can perform it with stripboard
 
 - SERVO: OPC_SW_REQ(ADRES+DIR=1) then servo is in state1 (parameter1) / OPC_SW_REQ(ADRES+DIR=0) then servo is in state2 (parameter2)
 
-Each output function has various parameters, later more about it. Outputs with Relay,Coil requires a extra 5V relay board.
+Each output function has various parameters, later more about it. Outputs with Relay or Coil function requires a extra 5V relay board.
 
 
 
