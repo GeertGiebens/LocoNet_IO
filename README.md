@@ -1,5 +1,3 @@
-Update 5 feb 2018: Added 3 photos PCB V3: [Photo first test version](https://github.com/GeertGiebens/LocoNet_IO/blob/master/LocoNet_IO_testopstelling.png);  [Photo PCB V3 cupperside](https://github.com/GeertGiebens/LocoNet_IO/blob/master/LocoNet_IO%20Print%20V3%20koperzijd.jpg);  [Photo PCB V3 componentside](https://github.com/GeertGiebens/LocoNet_IO/blob/master/LocoNet_IO%20Print%20V3%20bovenzijde.jpg)
-
 # LocoNet_IO
 
 
@@ -11,6 +9,40 @@ The assembler code is in Flemish. In a while I will translate it into English.
 The goal of this project is a simple LocoNet device for 30 Inputs or Outputs. You can choose for every port which function these have.  I shall explain how simple it is to upload the HEX code in the PIC µC. I shall explain how you can set up the function of the port with JMRI software. 
 
 The hardware is very simple for DIY projects. You can perform it with stripboard or with PCB board. 
+
+# Wat can you do with it:
+
+## You can choose between different  inputs functions:
+
+- TOGLE SWITCH:   CLOSED--> OPC_SW_REQ (ADRES+DIR=1) / OPEN--> OPC_SW_REQ(ADRES+DIR=0)  (AND OPTIONAL:  OPC_INPUT_REP() for block detector)
+
+- PUSH BUTTON SWITCH:   PRESSED--> OPC_SW_REQ (ADRES+DIR=1) / PRESSED AGAIN --> OPC_SW_REQ(ADRES+DIR=0) and so on …
+
+- PUSH BUTTON SWITCH ON:   PRESSED--> OPC_SW_REQ (ADRES+DIR=1)
+
+- PUSH BUTTON SWITCH OFF:   PRESSED--> OPC_SW_REQ (ADRES+DIR=0)
+
+- PUSH BUTTON SWITCH ON/OFF:  PRESSED--> OPC_SW_REQ(ADRES1+DIR(‘0’ OR ‘1’)) + OPC_SW_REQ(ADRES2+DIR(‘0’ OR ‘1’)) and so on till OPC_SW_REQ(ADRES12+DIR(‘0’ OR ‘1’)) (if  needed)
+
+ 
+## Or you can choose between different output functions: 
+
+-RELAY: OPC_SW_REQ(ADRES+DIR=1) then output is 'ON' / OPC_SW_REQ(ADRES+DIR=0) then output is 'OFF' 
+
+-COIL1: OPC_SW_REQ(ADRES+DIR=1) then output1is 'ON' for 1-255ms (=parameter)
+
+-COIL2: OPC_SW_REQ((ADRES+DIR=0) then output2 is 'ON' for 1-255ms (=parameter)
+
+-LED: OPC_SW_REQ(ADRES+DIR=1) then LED is 'ON' / OPC_SW_REQ(ADRES+DIR=0) then LED is
+'OFF'
+
+- LED BLINKING: OPC_SW_REQ(ADRES+DIR=1) then LED is toggle 'ON'/'OFF' with 1Hz frequency  / OPC_SW_REQ(ADRES+DIR=0) then LED is 'OFF'
+
+-SERVO: OPC_SW_REQ(ADRES+DIR=1) then servo is in state1 (parameter1) / OPC_SW_REQ(ADRES+DIR=0) then servo is in state2 (parameter2)
+
+Each output function has various parameters, later more about it. 
+
+
 
 
 # Hardware:
