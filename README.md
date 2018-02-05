@@ -2,7 +2,7 @@ Update 5 feb 2018: Added 3 photos PCB V3: [Photo first test version](https://git
 
 # LocoNet_IO
 
-My native language is not English. I hope I made the explanation how it work clear enough.
+!!! My native language is not English. I hope I made the explanation how it work clear enough. !!!
 
 The goal of this project is a simple LocoNet device for 30 Inputs or Outputs. You can choose for every port which function these have.  I shall explain how simple it is to upload the HEX code in the PIC µC. I shall explain how you can set up the function of the port with JMRI software. 
 
