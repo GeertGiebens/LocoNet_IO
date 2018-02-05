@@ -10,9 +10,9 @@ The goal of this project is a simple LocoNet device for 30 Inputs or Outputs. Yo
 
 The hardware is very simple for DIY projects. You can perform it with stripboard or with PCB board. 
 
-# Wat can you do with it:
+## Wat can you do with it:
 
-## You can choose between different  inputs functions:
+### You can choose between different  inputs functions:
 
 - TOGLE SWITCH:   CLOSED--> OPC_SW_REQ (ADRES+DIR=1) / OPEN--> OPC_SW_REQ(ADRES+DIR=0)  (AND OPTIONAL:  OPC_INPUT_REP() for block detector)
 
@@ -25,20 +25,20 @@ The hardware is very simple for DIY projects. You can perform it with stripboard
 - PUSH BUTTON SWITCH ON/OFF:  PRESSED--> OPC_SW_REQ(ADRES1+DIR(‘0’ OR ‘1’)) + OPC_SW_REQ(ADRES2+DIR(‘0’ OR ‘1’)) and so on till OPC_SW_REQ(ADRES12+DIR(‘0’ OR ‘1’)) (if  needed)
 
  
-## Or you can choose between different output functions: 
+### Or you can choose between different output functions: 
 
--RELAY: OPC_SW_REQ(ADRES+DIR=1) then output is 'ON' / OPC_SW_REQ(ADRES+DIR=0) then output is 'OFF' 
+- RELAY: OPC_SW_REQ(ADRES+DIR=1) then output is 'ON' / OPC_SW_REQ(ADRES+DIR=0) then output is 'OFF' 
 
--COIL1: OPC_SW_REQ(ADRES+DIR=1) then output1is 'ON' for 1-255ms (=parameter)
+- COIL1: OPC_SW_REQ(ADRES+DIR=1) then output1is 'ON' for 1-255ms (=parameter)
 
--COIL2: OPC_SW_REQ((ADRES+DIR=0) then output2 is 'ON' for 1-255ms (=parameter)
+- COIL2: OPC_SW_REQ((ADRES+DIR=0) then output2 is 'ON' for 1-255ms (=parameter)
 
--LED: OPC_SW_REQ(ADRES+DIR=1) then LED is 'ON' / OPC_SW_REQ(ADRES+DIR=0) then LED is
+- LED: OPC_SW_REQ(ADRES+DIR=1) then LED is 'ON' / OPC_SW_REQ(ADRES+DIR=0) then LED is
 'OFF'
 
 - LED BLINKING: OPC_SW_REQ(ADRES+DIR=1) then LED is toggle 'ON'/'OFF' with 1Hz frequency  / OPC_SW_REQ(ADRES+DIR=0) then LED is 'OFF'
 
--SERVO: OPC_SW_REQ(ADRES+DIR=1) then servo is in state1 (parameter1) / OPC_SW_REQ(ADRES+DIR=0) then servo is in state2 (parameter2)
+- SERVO: OPC_SW_REQ(ADRES+DIR=1) then servo is in state1 (parameter1) / OPC_SW_REQ(ADRES+DIR=0) then servo is in state2 (parameter2)
 
 Each output function has various parameters, later more about it. 
 
