@@ -27,18 +27,18 @@ The hardware is very simple for DIY projects. You can perform it with stripboard
  
 ### Or you can choose between different output functions: 
 
-- RELAY: OPC_SW_REQ(ADRES+DIR=1) then output is 'ON' / OPC_SW_REQ(ADRES+DIR=0) then output is 'OFF' 
+- RELAY:   OPC_SW_REQ(ADRES+DIR=1) then output is 'ON' / OPC_SW_REQ(ADRES+DIR=0) then output is 'OFF' 
 
-- COIL1: OPC_SW_REQ(ADRES+DIR=1) then output1 is 'ON' for 1-255ms (=parameter)
+- COIL1:   OPC_SW_REQ(ADRES+DIR=1) then output1 is 'ON' for 1-255ms (=parameter)
 
-- COIL2: OPC_SW_REQ(ADRES+DIR=0) then output2 is 'ON' for 1-255ms (=parameter)
+- COIL2:   OPC_SW_REQ(ADRES+DIR=0) then output2 is 'ON' for 1-255ms (=parameter)
 
-- LED: OPC_SW_REQ(ADRES+DIR=1) then LED is 'ON' / OPC_SW_REQ(ADRES+DIR=0) then LED is
+- LED:   OPC_SW_REQ(ADRES+DIR=1) then LED is 'ON' / OPC_SW_REQ(ADRES+DIR=0) then LED is
 'OFF'
 
-- LED BLINKING: OPC_SW_REQ(ADRES+DIR=1) then LED is toggle 'ON'/'OFF' with 1Hz frequency  / OPC_SW_REQ(ADRES+DIR=0) then LED is 'OFF'
+- LED BLINKING:   OPC_SW_REQ(ADRES+DIR=1) then LED is toggle 'ON'/'OFF' with 1Hz frequency  / OPC_SW_REQ(ADRES+DIR=0) then LED is 'OFF'
 
-- SERVO: OPC_SW_REQ(ADRES+DIR=1) then servo is in state1 (parameter1) / OPC_SW_REQ(ADRES+DIR=0) then servo is in state2 (parameter2)
+- SERVO:   OPC_SW_REQ(ADRES+DIR=1) then servo is in state1 (parameter1) / OPC_SW_REQ(ADRES+DIR=0) then servo is in state2 (parameter2)
 
 Each output function has various parameters, later more about it. Outputs with Relay or Coil function requires a extra 5V relay board.
 
