@@ -1,4 +1,4 @@
-Update 5 feb 2018: Added 3 photos PCB V3: [First test version](https://github.com/GeertGiebens/LocoNet_IO/blob/master/LocoNet_IO_testopstelling.png);  [Photo PCB V3 cuperside](https://github.com/GeertGiebens/LocoNet_IO/blob/master/LocoNet_IO%20Print%20V3%20koperzijd.jpg);  [Photo PCB V3 componentside](https://github.com/GeertGiebens/LocoNet_IO/blob/master/LocoNet_IO%20Print%20V3%20bovenzijde.jpg)
+Update 5 feb 2018: Added 3 photos PCB V3: [Photo first test version](https://github.com/GeertGiebens/LocoNet_IO/blob/master/LocoNet_IO_testopstelling.png);  [Photo PCB V3 cuperside](https://github.com/GeertGiebens/LocoNet_IO/blob/master/LocoNet_IO%20Print%20V3%20koperzijd.jpg);  [Photo PCB V3 componentside](https://github.com/GeertGiebens/LocoNet_IO/blob/master/LocoNet_IO%20Print%20V3%20bovenzijde.jpg)
 
 # LocoNet_IO
 LocoNet In/Out device with PIC microcontroller for DIY projects.
@@ -17,7 +17,12 @@ This device has 30 Inputs/Outputs that can be set as different functions
 [Total schematic hardware](https://github.com/GeertGiebens/LocoNet_IO/blob/master/LOCONET%20HARDWARE%20II.png)
  
 [Hardware comparator](https://github.com/GeertGiebens/LocoNet_IO/blob/master/LocoNet%20personal%20use%20edition%20conditions.png)
+
+
+# PCB:
  
+[Photo first test version](https://github.com/GeertGiebens/LocoNet_IO/blob/master/LocoNet_IO_testopstelling.png)
+
 [Hardware on stripboard](https://github.com/GeertGiebens/LocoNet_IO/blob/master/PCB%20LOCONET%20II.png)
  
 [Back side stripboard](https://github.com/GeertGiebens/LocoNet_IO/blob/master/LOCONET%20IO%20Stripboard%20backside.png)
