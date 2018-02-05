@@ -81,6 +81,7 @@ If the read Byte is a Opcode (bit7=‘1’), the interrupt know how much bytes t
 
 If this device is sending data through the transmitter, this data is also read by the receiver. The receiver interrupt also regulate the next Byte to send. (The first Byte to send is started after Timer1 CD BackOff time). To check if there is ‘COLLISION’, the sending Byte must be the same with the received Byte. If not, then send a ‘Line Break’. The LocoNet data must then be resend.
 
+## Schematic:
   
 <img alt="open opps 1" src= https://github.com/GeertGiebens/LocoNet_IO/blob/master/LOCONET%20INTERRUPT%20PROGRAM.png>
   
