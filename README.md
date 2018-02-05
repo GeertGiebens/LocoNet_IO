@@ -14,13 +14,13 @@ The hardware is very simple for DIY projects. You can perform it with stripboard
 
 ### You can choose between different  inputs functions:
 
-- TOGLE SWITCH:   CLOSED--> OPC_SW_REQ (ADRES+DIR=1)  /  OPEN--> OPC_SW_REQ(ADRES+DIR=0)  (AND OPTIONAL:  OPC_INPUT_REP(...) for block detector)
+- TOGLE SWITCH:   CLOSED--> OPC_SW_REQ(ADRES+DIR=1)  /  OPEN--> OPC_SW_REQ(ADRES+DIR=0)  (AND OPTIONAL:  OPC_INPUT_REP(...) for block detector)
 
-- PUSH BUTTON SWITCH:   PRESSED--> OPC_SW_REQ (ADRES+DIR=1)  /  PRESSED AGAIN --> OPC_SW_REQ(ADRES+DIR=0) and so on …
+- PUSH BUTTON SWITCH:   PRESSED--> OPC_SW_REQ(ADRES+DIR=1)  /  PRESSED AGAIN --> OPC_SW_REQ(ADRES+DIR=0) and so on …
 
-- PUSH BUTTON SWITCH ON:   PRESSED--> OPC_SW_REQ (ADRES+DIR=1)
+- PUSH BUTTON SWITCH ON:   PRESSED--> OPC_SW_REQ(ADRES+DIR=1)
 
-- PUSH BUTTON SWITCH OFF:   PRESSED--> OPC_SW_REQ (ADRES+DIR=0)
+- PUSH BUTTON SWITCH OFF:   PRESSED--> OPC_SW_REQ(ADRES+DIR=0)
 
 - PUSH BUTTON SWITCH ON/OFF:  PRESSED--> OPC_SW_REQ(ADRES1+DIR(‘0’ OR ‘1’)) + OPC_SW_REQ(ADRES2+DIR(‘0’ OR ‘1’)) + ... + OPC_SW_REQ(ADRES12+DIR(‘0’ OR ‘1’)) (if  needed)
  
@@ -31,7 +31,7 @@ The hardware is very simple for DIY projects. You can perform it with stripboard
 
 - COIL1: OPC_SW_REQ(ADRES+DIR=1) then output1 is 'ON' for 1-255ms (=parameter)
 
-- COIL2: OPC_SW_REQ((ADRES+DIR=0) then output2 is 'ON' for 1-255ms (=parameter)
+- COIL2: OPC_SW_REQ(ADRES+DIR=0) then output2 is 'ON' for 1-255ms (=parameter)
 
 - LED: OPC_SW_REQ(ADRES+DIR=1) then LED is 'ON' / OPC_SW_REQ(ADRES+DIR=0) then LED is
 'OFF'
