@@ -95,7 +95,6 @@ For the communication with LocoNet bus I use hardware inside de microcontroller.
 
 * Hardware detect  ‘Linebreak’ --> register: RCSTA,FERR=’1’. If another device send a LineBreak when this device read bit’s, then Byte-receiver have a framing error.
 
----
 
 ## There are 2 interrupts in the communication part of LocoNet:
 
