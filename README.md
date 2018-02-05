@@ -1,3 +1,5 @@
+Update 5 feb 2018: Add 2 photos PCB V3
+
 # LocoNet_IO
 LocoNet In/Out device with PIC microcontroller for DIY projects.
 
@@ -20,11 +22,11 @@ This device has 30 Inputs/Outputs that can be set as different functions
  
 [Back side stripboard](https://github.com/GeertGiebens/LocoNet_IO/blob/master/LOCONET%20IO%20Stripboard%20backside.png)
   
-[Foto stripboard](https://github.com/GeertGiebens/LocoNet_IO/blob/master/LocoNet%20foto%20PCB.png)
+[Photo stripboard](https://github.com/GeertGiebens/LocoNet_IO/blob/master/LocoNet%20foto%20PCB.png)
 
-[Foto PCB V3 cuperside](https://github.com/GeertGiebens/LocoNet_IO/blob/master/LocoNet_IO%20Print%20V3%20koperzijd.jpg)
+[pHoto PCB V3 cuperside](https://github.com/GeertGiebens/LocoNet_IO/blob/master/LocoNet_IO%20Print%20V3%20koperzijd.jpg)
 
-[Foto PCB V3 componentside](https://github.com/GeertGiebens/LocoNet_IO/blob/master/LocoNet_IO%20Print%20V3%20bovenzijde.jpg)
+[Photo PCB V3 componentside](https://github.com/GeertGiebens/LocoNet_IO/blob/master/LocoNet_IO%20Print%20V3%20bovenzijde.jpg)
  
   
   # Software:
@@ -72,5 +74,5 @@ If this device is sending data through the transmitter, this data is also read b
 [Hardware <--> INTERRUPT <--> Software](https://github.com/GeertGiebens/LocoNet_IO/blob/master/LOCONET%20INTERRUPT%20PROGRAM.png)
 
 ...
-under construction (4 feb 2018)
+under construction (5 feb 2018)
 ...
