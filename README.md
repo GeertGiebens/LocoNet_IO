@@ -1,4 +1,4 @@
-Update 5 feb 2018: Added 3 photos PCB V3: [Photo first test version](https://github.com/GeertGiebens/LocoNet_IO/blob/master/LocoNet_IO_testopstelling.png);  [Photo PCB V3 cuperside](https://github.com/GeertGiebens/LocoNet_IO/blob/master/LocoNet_IO%20Print%20V3%20koperzijd.jpg);  [Photo PCB V3 componentside](https://github.com/GeertGiebens/LocoNet_IO/blob/master/LocoNet_IO%20Print%20V3%20bovenzijde.jpg)
+Update 5 feb 2018: Added 3 photos PCB V3: [Photo first test version](https://github.com/GeertGiebens/LocoNet_IO/blob/master/LocoNet_IO_testopstelling.png);  [Photo PCB V3 cupperside](https://github.com/GeertGiebens/LocoNet_IO/blob/master/LocoNet_IO%20Print%20V3%20koperzijd.jpg);  [Photo PCB V3 componentside](https://github.com/GeertGiebens/LocoNet_IO/blob/master/LocoNet_IO%20Print%20V3%20bovenzijde.jpg)
 
 # LocoNet_IO
 
@@ -69,9 +69,9 @@ There are 2 interrupts in the communication part of LocoNet:
 
 Timer1 interrupt:
 
--Interrupt from LineBreak send by this device: then start timer with new CD BackOff time.
+* Interrupt from LineBreak send by this device: then start timer with new CD BackOff time.
 
--Interrupt from CD BackOff time: if there is no new data to send --> restart timer with new CD BackOff time.
+* Interrupt from CD BackOff time: if there is no new data to send --> restart timer with new CD BackOff time.
 
 (I use for the CD BackOff time always a fixed time and a variable time consisting of CD+MD+PD  --> 1200µs+360µs+random(1µs-1024µs). The  timer restart always with new CD BackOff time: CD+MD+PD (PD with new random time).  Device continues to try to gain access to LocoNet!)
 
