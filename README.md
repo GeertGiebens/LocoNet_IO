@@ -34,7 +34,7 @@ The hardware is very simple for DIY projects. You can perform it with stripboard
   
 [Photo stripboard](https://github.com/GeertGiebens/LocoNet_IO/blob/master/LocoNet%20foto%20PCB.png)
 
-[Photo PCB V3 cuperside](https://github.com/GeertGiebens/LocoNet_IO/blob/master/LocoNet_IO%20Print%20V3%20koperzijd.jpg)
+[Photo PCB V3 cupperside](https://github.com/GeertGiebens/LocoNet_IO/blob/master/LocoNet_IO%20Print%20V3%20koperzijd.jpg)
 
 [Photo PCB V3 componentside](https://github.com/GeertGiebens/LocoNet_IO/blob/master/LocoNet_IO%20Print%20V3%20bovenzijde.jpg)
  
