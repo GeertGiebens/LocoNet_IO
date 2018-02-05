@@ -1,4 +1,4 @@
-Update 5 feb 2018: Add 2 photos PCB V3 [Photo PCB V3 cuperside](https://github.com/GeertGiebens/LocoNet_IO/blob/master/LocoNet_IO%20Print%20V3%20koperzijd.jpg) [Photo PCB V3 componentside](https://github.com/GeertGiebens/LocoNet_IO/blob/master/LocoNet_IO%20Print%20V3%20bovenzijde.jpg)
+Update 5 feb 2018: Add 2 photos PCB V3: [Photo PCB V3 cuperside](https://github.com/GeertGiebens/LocoNet_IO/blob/master/LocoNet_IO%20Print%20V3%20koperzijd.jpg);  [Photo PCB V3 componentside](https://github.com/GeertGiebens/LocoNet_IO/blob/master/LocoNet_IO%20Print%20V3%20bovenzijde.jpg)
 
 # LocoNet_IO
 LocoNet In/Out device with PIC microcontroller for DIY projects.
