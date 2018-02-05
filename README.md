@@ -82,7 +82,7 @@ If this device is sending data through the transmitter, this data is also read b
 <table>
   <tr>
     <td>
-      https://github.com/GeertGiebens/LocoNet_IO/blob/master/LOCONET%20INTERRUPT%20PROGRAM.png
+      <img alt="open opps 1" src= https://github.com/GeertGiebens/LocoNet_IO/blob/master/LOCONET%20INTERRUPT%20PROGRAM.png>
     <td>
   <tr>
 <table>
