@@ -1,11 +1,12 @@
 Update 5 feb 2018: Added 3 photos PCB V3: [Photo first test version](https://github.com/GeertGiebens/LocoNet_IO/blob/master/LocoNet_IO_testopstelling.png);  [Photo PCB V3 cuperside](https://github.com/GeertGiebens/LocoNet_IO/blob/master/LocoNet_IO%20Print%20V3%20koperzijd.jpg);  [Photo PCB V3 componentside](https://github.com/GeertGiebens/LocoNet_IO/blob/master/LocoNet_IO%20Print%20V3%20bovenzijde.jpg)
 
 # LocoNet_IO
-LocoNet In/Out device with PIC microcontroller for DIY projects.
 
-Written in ASSEMBLER for PIC 18F4620 MicroController.
+My native language is not English. I hope I made the explanation how it work clear enough.
 
-This device has 30 Inputs/Outputs that can be set as different functions
+The goal of this project is a simple LocoNet device for 30 Inputs or Outputs. You can choose for every port which function these have.  I shall explain how simple it is to upload the HEX code in the PIC µC. I shall explain how you can set up the function of the port with JMRI software. 
+
+The hardware is very simple for DIY projects. You can perform it with stripboard or with PCB board. 
 
 
 # Hardware:
