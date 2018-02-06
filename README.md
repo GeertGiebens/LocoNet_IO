@@ -1,14 +1,13 @@
 # LocoNet_IO
 
 
-!!! My native language is not English. I hope I made the explanation how it work clear enough. !!!
+> !!! My native language is not English. I hope I made the explanation how it work clear enough. !!!
 
-The assembler code is in Flemish. In a while I will translate it into English. 
+> The assembler code is in Flemish. In a while I will translate it into English. 
 
+> The goal of this project is a simple LocoNet device for 30 Inputs or Outputs. You can choose for every port which function these have.  I shall explain how simple it is to upload the HEX code in the PIC µC. I shall explain how you can set up the function of the port with JMRI software. 
 
-The goal of this project is a simple LocoNet device for 30 Inputs or Outputs. You can choose for every port which function these have.  I shall explain how simple it is to upload the HEX code in the PIC µC. I shall explain how you can set up the function of the port with JMRI software. 
-
-The hardware is very simple for DIY projects. You can perform it with stripboard or with PCB board. 
+> The hardware is very simple for DIY projects. You can perform it with stripboard or with PCB board. 
 
 ## What can you do with this device:
 
