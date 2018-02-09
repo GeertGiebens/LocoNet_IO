@@ -7,7 +7,16 @@
 >
 > The goal of this project is a simple LocoNet device for 30 Inputs or Outputs. You can choose for every port which function these have.  I shall explain how simple it is to upload the HEX code in the PIC µC. I shall explain how you can set up the function of the port with JMRI software. 
 >
-> The hardware is very simple for DIY projects. You can perform it with stripboard or with PCB board. 
+> ###Why 30 inputs/outputs? 
+>A 40pin microcontroller PIC18F4620 or PIC18F4520 is quite cheap.  And the inputs/outputs are used faster than you think. For example, controlling LED's track signal (3-4 outputs); a control board with lay out tracks and so on. You do not have to use all the ports. I use them for modular construction.
+>
+>###How much does such a device cost?  
+>For example a basic version with a PIC 18F4520 µC and extra components (R’s; SIL R’s; connectors; capacitors; PCB …) cost  about 3,61€ or 0.12€/port! (DIY)
+>
+>###DIY? 
+>The device  has a lot of hardware on-board.(byte-transmitter; byte-receiver; analog comparator and so on). I used a lot of this
+hardware,  so the lay out of the PCB can be kept simple for DIY on stripboard or PCB.
+
 
 ## What can you do with this device:
 
