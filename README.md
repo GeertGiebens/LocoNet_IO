@@ -83,7 +83,9 @@ Each output function has various parameters, later more about it. Outputs with R
   
   # Software:
   
-## Communication with LocoNet:  LOCONET_18F4620_V1p0.INC
+## Communication with LocoNet:  LOCONET_18F4X20_V1p0.INC
+
+<img alt="open opps 1" src=https://github.com/GeertGiebens/LocoNet_IO/blob/master/LocoNet%20HARDWARE-INTERRUPT-MAIN.png>
 
 I explain here the relation between hardware and software interrupt program.
 
@@ -128,5 +130,5 @@ If this device is sending data through the transmitter, this data is also read b
   
 
 ...
-under construction (10 feb 2018)
+under construction (13 feb 2018)
 ...
