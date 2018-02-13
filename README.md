@@ -83,7 +83,7 @@ Each output function has various parameters, later more about it. Outputs with R
   
   # Software:
   
-## Communication with LocoNet:  LOCONET_18F4X20_V1p0.INC
+## Communication with LocoNet:  LOCONET_18F4X20_V1p2.INC
 
 <img alt="open opps 1" src=https://github.com/GeertGiebens/LocoNet_IO/blob/master/LocoNet%20HARDWARE-INTERRUPT-MAIN.png>
 
