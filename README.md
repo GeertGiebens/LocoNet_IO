@@ -130,5 +130,5 @@ If this device is sending data through the transmitter, this data is also read b
   
 
 ...
-under construction (19 feb 2018)
+under construction (06 mrt 2018)
 ...
