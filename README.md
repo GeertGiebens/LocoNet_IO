@@ -132,3 +132,6 @@ If this device is sending data through the transmitter, this data is also read b
 ...
 under construction (06 mrt 2018)
 ...
+
+### Other projects:
+-[LocoNet PIC12F683](https://github.com/GeertGiebens/LocoNet-12F683)
