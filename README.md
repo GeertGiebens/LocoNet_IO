@@ -1,6 +1,6 @@
 # LocoNet_IO
 
-under construction (april/12/2018)...
+under construction (last update: april/12/2018)
 
 
 > !!! My native language is not English. I hope I made the explanation how it work clear enough. !!!
