@@ -1,5 +1,7 @@
 # LocoNet_IO
 
+under construction (april/12/2018)...
+
 
 > !!! My native language is not English. I hope I made the explanation how it work clear enough. !!!
 >
@@ -132,8 +134,7 @@ If this device is sending data through the transmitter, this data is also read b
   
 
 ...
-under construction (06 mrt 2018)
-...
+
 
 ### Other projects:
 -[LocoNet PIC12F683](https://github.com/GeertGiebens/LocoNet-12F683)
