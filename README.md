@@ -11,6 +11,10 @@ under construction (april/12/2018)...
 >
 ><img alt="open opps 1" src=https://github.com/GeertGiebens/LocoNet_IO/blob/master/JMRI%20LocoNet%20IO%20program%20tool.jpg>
 >
+> The settings menu provides sufficient information during use. This by giving information when you use the computer mouse over the choice of settings. This is only a basic version, later it will certainly be extended.
+>
+
+
 ### Why 30 inputs/outputs? 
 >A 40pin microcontroller PIC18F4620 or PIC18F4520 is quite cheap.  And the inputs/outputs are used faster than you think. For example, controlling LED's track signal (3-4 outputs); a control board with lay out tracks and so on. You do not have to use all the ports. I use them for modular construction.
 >
