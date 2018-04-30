@@ -599,7 +599,7 @@ lConst3 = javax.swing.JTextField("0",3)
 lBinair = javax.swing.JTextField("0",3)
 
 lDevice.setToolTipText("Device number, select from 1 to 127")
-lAddress.setToolTipText("Address number, select from 1 to 12 (only used with function BUTTON DIR=1 or 0")
+
 lLNAddress.setToolTipText("LocoNet Address, select from 0 to 2047")
    
 # create a frame to  display the buttons and panels:
