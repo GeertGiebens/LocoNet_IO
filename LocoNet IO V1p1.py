@@ -1,19 +1,20 @@
 import java
 import javax.swing
 typePacket = 0
+#Date: 30/april/2018    Version:1.1   File: LocoNet IO V1p1.py
 
 NOP           ="NOP = NO Operation"
-SWITCH        ="SWITCH Closed DIR=1; Open DIR=0 (+ S88 bus)"
+SWITCH        ="SWITCH DIR=1 closed  DIR=0 opened  (+ S88 bus)"
 BUTTON        ="BUTTON DIR= alternate between 1 and 0"
 BUTTON_ON     ="BUTTON DIR=1"
 BUTTON_OFF    ="BUTTON DIR=0"
 BUTTON_ON_OFF ="BUTTON Send multiple addresses with DIR=1 or 0"
-LED           ="LED"
-LED_BLINKING  ="LED BLINKING"
-RELAY         ="RELAY"
-COIL1         ="COIL1 DIR=1"
-COIL2         ="COIL2 DIR=0" 
-SERVO         ="SERVO"
+LED           ="LED   DIR=1 LED ON         DIR=0 LED OFF"
+LED_BLINKING  ="LED   DIR=1 LED BLINKING   DIR=0 LED OFF"
+RELAY         ="RELAY  DIR=1 RELAY ON      DIR=0 RELAY OFF"
+COIL1         ="COIL1  DIR=1  (PORT+1 ==> COIL2 DIR=0)"
+COIL2         ="COIL2  DIR=0  (Do not select it, use COIL1 DIR=1)" 
+SERVO         ="SERVO  DIR=1 time=FV1   DIR=0 time=FV2"
 
 OPCODE = 0xE5
 
@@ -22,7 +23,6 @@ class MyLnListener (jmri.jmrix.loconet.LocoNetListener) :
     def message(self,msg) :
 
          if ((msg.getElement(0)==OPCODE) and (msg.getElement(2)==0x12)) : 
-              lAddress.setText(str(msg.getElement(6)))
               lFunction.setText(str(msg.getElement(7)+((msg.getElement(5) & 2)*64)))
               lConst1.setText(str(msg.getElement(8)+((msg.getElement(5) & 4)*32)))
               lConst2.setText(str(msg.getElement(9)+((msg.getElement(5) & 8)*16)))
@@ -30,13 +30,12 @@ class MyLnListener (jmri.jmrix.loconet.LocoNetListener) :
                      lConst2.setText(str(msg.getElement(9)+((msg.getElement(5) & 8)*16)+1))
               lConst3.setText(str(msg.getElement(11)+((msg.getElement(10) & 1)*128)))
               lBinair.setText(str(msg.getElement(12)+((msg.getElement(10) & 2)*64)))
-              lLNAddress.setText(str(msg.getElement(13)+(msg.getElement(14)*128)))
+              lLNAddress.setText(str(1+msg.getElement(13)+(msg.getElement(14)*128)))
 
               if   int(lFunction.text) == 0 :
          		lConst1.setEnabled(False)
          		lConst2.setEnabled(False)
          		lConst3.setEnabled(False)
-         		lAddress.setEnabled(False)
          		lLNAddress.setEnabled(False)
 			selectBox.setEnabled(False)
 			adresBox.setEnabled(False)
@@ -48,7 +47,6 @@ class MyLnListener (jmri.jmrix.loconet.LocoNetListener) :
          		lConst1.setEnabled(True)
          		lConst2.setEnabled(True)
          		lConst3.setEnabled(False)
-         		lAddress.setEnabled(False)
          		lLNAddress.setEnabled(True)
 			selectBox.setEnabled(False)
 			adresBox.setEnabled(False)
@@ -60,7 +58,6 @@ class MyLnListener (jmri.jmrix.loconet.LocoNetListener) :
          		lConst1.setEnabled(False)
          		lConst2.setEnabled(False)
          		lConst3.setEnabled(False)
-         		lAddress.setEnabled(False)
          		lLNAddress.setEnabled(True)
 			selectBox.setEnabled(False)
 			adresBox.setEnabled(False)
@@ -72,7 +69,6 @@ class MyLnListener (jmri.jmrix.loconet.LocoNetListener) :
          		lConst1.setEnabled(False)
          		lConst2.setEnabled(False)
          		lConst3.setEnabled(False)
-         		lAddress.setEnabled(False)
          		lLNAddress.setEnabled(True)
 			selectBox.setEnabled(False)
 			adresBox.setEnabled(False)
@@ -84,7 +80,6 @@ class MyLnListener (jmri.jmrix.loconet.LocoNetListener) :
 		        lConst1.setEnabled(False)
 		        lConst2.setEnabled(False)
 		        lConst3.setEnabled(False)
- 		        lAddress.setEnabled(False)
 		        lLNAddress.setEnabled(True)
 			selectBox.setEnabled(False)
 			adresBox.setEnabled(False)
@@ -96,7 +91,6 @@ class MyLnListener (jmri.jmrix.loconet.LocoNetListener) :
          		lConst1.setEnabled(False)
          		lConst2.setEnabled(False)
          		lConst3.setEnabled(False)
-         		lAddress.setEnabled(True)
          		lLNAddress.setEnabled(True)
 			selectBox.setEnabled(True)
 			adresBox.setEnabled(True)
@@ -115,32 +109,29 @@ class MyLnListener (jmri.jmrix.loconet.LocoNetListener) :
          		lConst1.setEnabled(True)
          		lConst2.setEnabled(True)
          		lConst3.setEnabled(True)
-         		lAddress.setEnabled(False)
          		lLNAddress.setEnabled(True)
 			selectBox.setEnabled(False)
 			adresBox.setEnabled(False)
          		lConst1.setToolTipText("Setting the intensity when off:  range 0-FV2")
          		lConst2.setToolTipText("Setting the intensity when on:  range FV1-255")
-         		lConst3.setToolTipText("Transistion period:  range 1-255")
+         		lConst3.setToolTipText("Transistion period:  range 1-255  1=slow; 255=fast")
          		functieBox.setSelectedItem(LED)
               elif  int(lFunction.text) == 66 :
          		lConst1.setEnabled(True)
          		lConst2.setEnabled(True)
          		lConst3.setEnabled(True)
-         		lAddress.setEnabled(False)
          		lLNAddress.setEnabled(True)
          		lLNAddress.setEnabled(True)
 			selectBox.setEnabled(False)
 			adresBox.setEnabled(False)
          		lConst1.setToolTipText("Setting the intensity when off:  range 0-FV2")
          		lConst2.setToolTipText("Setting the intensity when on:  range FV1-255")
-         		lConst3.setToolTipText("Transistion period:  range 1-255")
+         		lConst3.setToolTipText("Transistion period:  range 1-255  1=slow; 255=fast")
          		functieBox.setSelectedItem(LED_BLINKING)
               elif  int(lFunction.text) == 8 :
          		lConst1.setEnabled(True)
          		lConst2.setEnabled(True)
          		lConst3.setEnabled(False)
-         		lAddress.setEnabled(False)
          		lLNAddress.setEnabled(True)
 			selectBox.setEnabled(False)
 			adresBox.setEnabled(False)
@@ -152,7 +143,6 @@ class MyLnListener (jmri.jmrix.loconet.LocoNetListener) :
          		lConst1.setEnabled(True)
          		lConst2.setEnabled(False)
          		lConst3.setEnabled(False)
-         		lAddress.setEnabled(False)
          		lLNAddress.setEnabled(True)
 			selectBox.setEnabled(False)
 			adresBox.setEnabled(False)
@@ -164,7 +154,6 @@ class MyLnListener (jmri.jmrix.loconet.LocoNetListener) :
          		lConst1.setEnabled(True)
          		lConst2.setEnabled(False)
          		lConst3.setEnabled(False)
-         		lAddress.setEnabled(False)
          		lLNAddress.setEnabled(True)
 			selectBox.setEnabled(False)
 			adresBox.setEnabled(False)
@@ -176,7 +165,6 @@ class MyLnListener (jmri.jmrix.loconet.LocoNetListener) :
          		lConst1.setEnabled(True)
          		lConst2.setEnabled(True)
          		lConst3.setEnabled(True)
-         		lAddress.setEnabled(False)
          		lLNAddress.setEnabled(True)
 			selectBox.setEnabled(False)
 			adresBox.setEnabled(False)
@@ -256,8 +244,8 @@ def whenSendButtonClicked(event) :
      ARG10 = int(lConst3.text)/128 + (int(lBinair.text)/128)*2
      ARG11 = int(lConst3.text)%128
      ARG12 = int(lBinair.text)%128
-     ARG13 = int(lLNAddress.text)%128 
-     ARG14 = int(lLNAddress.text)/128
+     ARG13 = (int(lLNAddress.text)-1)%128 
+     ARG14 = (int(lLNAddress.text)-1)/128
      ARG15 = 0
      if int(lFunction.text) == 33 and selectBox.getSelectedItem() == "DIR=1" :
               ARG14 = ARG14+48
@@ -266,15 +254,20 @@ def whenSendButtonClicked(event) :
      if int(lFunction.text) == 1 :
               ARG9 =  (int(lConst2.text)-1)%128
               ARG5 =  (int(lFunction.text)/128)*2 + (int(lConst1.text)/128)*4 + ((int(lConst2.text)-1)/128)*8
-
      sendLoconetMsg(msgLength,opcode,ARG1,ARG2,ARG3,ARG4,ARG5,ARG6,ARG7,ARG8,ARG9,ARG10,ARG11,ARG12,ARG13,ARG14,ARG15)
+
+     if   functieBox.getSelectedItem() == COIL1 : # IF select COIL1: Next port must be COIL2 with same LN address!
+        lFunction.setText("18")
+ 	ARG4 =  int(portBox.getSelectedItem())+1  
+  	ARG7 =  18
+	sendLoconetMsg(msgLength,opcode,ARG1,ARG2,ARG3,ARG4,ARG5,ARG6,ARG7,ARG8,ARG9,ARG10,ARG11,ARG12,ARG13,ARG14,ARG15)
+
      return
 
 def whenInitButtonClicked(event) :
      
-     if   functieBox.getSelectedItem() == NOP :
-         lAddress.setText("1")  
-         lLNAddress.setText("0")
+     if   functieBox.getSelectedItem() == NOP :  
+         lLNAddress.setText("1")
          lConst1.setText("0")
          lConst2.setText("0")
          lConst3.setText("0")
@@ -291,8 +284,7 @@ def whenInitButtonClicked(event) :
          lFunction.setText("0")
 	 adresBox.setSelectedItem("1")
      elif functieBox.getSelectedItem() == SWITCH :
-         lAddress.setText("1")
-         lLNAddress.setText("2047")     
+         lLNAddress.setText("2048")     
          lConst1.setText("0")
          lConst2.setText("1")
          lConst3.setText("0")
@@ -309,8 +301,7 @@ def whenInitButtonClicked(event) :
          lFunction.setText("1")
 	 adresBox.setSelectedItem("1")
      elif  functieBox.getSelectedItem() == BUTTON :
-         lAddress.setText("1") 
-         lLNAddress.setText("0")    
+         lLNAddress.setText("1")    
          lConst1.setText("0")
          lConst2.setText("0")
          lConst3.setText("0")
@@ -327,8 +318,7 @@ def whenInitButtonClicked(event) :
          lFunction.setText("3")
 	 adresBox.setSelectedItem("1")
      elif  functieBox.getSelectedItem() == BUTTON_ON :
-         lAddress.setText("1")
-         lLNAddress.setText("0")     
+         lLNAddress.setText("1")     
          lConst1.setText("0")
          lConst2.setText("0")
          lConst3.setText("0")
@@ -345,8 +335,7 @@ def whenInitButtonClicked(event) :
          lFunction.setText("5")
 	 adresBox.setSelectedItem("1")
      elif  functieBox.getSelectedItem() == BUTTON_OFF :
-         lAddress.setText("1")
-         lLNAddress.setText("0")     
+         lLNAddress.setText("1")     
          lConst1.setText("0")
          lConst2.setText("0")
          lConst3.setText("0")
@@ -363,8 +352,7 @@ def whenInitButtonClicked(event) :
          lFunction.setText("7")
 	 adresBox.setSelectedItem("1")
      elif  functieBox.getSelectedItem() == BUTTON_ON_OFF:
-         lAddress.setText("1") 
-         lLNAddress.setText("0")    
+         lLNAddress.setText("1")    
          lConst1.setText("0")
          lConst2.setText("0")
          lConst3.setText("0")
@@ -380,8 +368,7 @@ def whenInitButtonClicked(event) :
          lConst3.setToolTipText("")
          lFunction.setText("33")
      elif  functieBox.getSelectedItem() == LED :
-         lAddress.setText("1") 
-         lLNAddress.setText("0")    
+         lLNAddress.setText("1")    
          lConst1.setText("0")
          lConst2.setText("255")
          lConst3.setText("4")
@@ -394,15 +381,14 @@ def whenInitButtonClicked(event) :
 	 adresBox.setEnabled(False)
          lConst1.setToolTipText("Setting the intensity when off:  range 0-FV2")
          lConst2.setToolTipText("Setting the intensity when on:  range FV1-255")
-         lConst3.setToolTipText("Transistion period:  range 1-255")
+         lConst3.setToolTipText("Transistion period:  range 1-255  1=slow; 255=fast")
          lFunction.setText("64")
 	 adresBox.setSelectedItem("1")
      elif  functieBox.getSelectedItem() == LED_BLINKING :
-         lAddress.setText("1") 
-         lLNAddress.setText("0")    
+         lLNAddress.setText("1")    
          lConst1.setText("0")
          lConst2.setText("255")
-         lConst3.setText("8")
+         lConst3.setText("12")
          lConst1.setEnabled(True)
          lConst2.setEnabled(True)
          lConst3.setEnabled(True)
@@ -413,12 +399,11 @@ def whenInitButtonClicked(event) :
 	 adresBox.setEnabled(False)
          lConst1.setToolTipText("Setting the intensity when off:  range 0-FV2")
          lConst2.setToolTipText("Setting the intensity when on:  range FV1-255")
-         lConst3.setToolTipText("Transistion period:  range 1-255")
+         lConst3.setToolTipText("Transistion period:  range 1-255  1=slow; 255=fast")
          lFunction.setText("66")
 	 adresBox.setSelectedItem("1")  
      elif  functieBox.getSelectedItem() == RELAY :
-         lAddress.setText("1") 
-         lLNAddress.setText("0")    
+         lLNAddress.setText("1")    
          lConst1.setText("0")
          lConst2.setText("0")
          lConst3.setText("0")
@@ -435,8 +420,7 @@ def whenInitButtonClicked(event) :
          lFunction.setText("8") 
 	 adresBox.setSelectedItem("1") 
      elif  functieBox.getSelectedItem() == COIL1 :
-         lAddress.setText("1")
-         lLNAddress.setText("0")    
+         lLNAddress.setText("1")    
          lConst1.setText("255")
          lConst2.setText("0")
          lConst3.setText("0")
@@ -453,8 +437,7 @@ def whenInitButtonClicked(event) :
          lFunction.setText("16") 
 	 adresBox.setSelectedItem("1")
      elif  functieBox.getSelectedItem() == COIL2 :
-         lAddress.setText("1")
-         lLNAddress.setText("0")   
+         lLNAddress.setText("1")   
          lConst1.setText("255")
          lConst2.setText("0")
          lConst3.setText("0")
@@ -471,8 +454,7 @@ def whenInitButtonClicked(event) :
          lFunction.setText("18") 
 	 adresBox.setSelectedItem("1")
      else : #functieBox.getSelectedItem() == SERVO
-         lAddress.setText("1")
-         lLNAddress.setText("0")
+         lLNAddress.setText("1")
          lConst1.setText("100")     
          lConst2.setText("200")
          lConst3.setText("255")
@@ -609,9 +591,8 @@ selectBox.setToolTipText("Select DIR LN Address")
 # create fields
 
 lDevice  = javax.swing.JTextField("1",3)
-lFunction = javax.swing.JTextField("1",3)  
-lAddress = javax.swing.JTextField("1",2)   
-lLNAddress = javax.swing.JTextField("2047",4)
+lFunction = javax.swing.JTextField("1",3)   
+lLNAddress = javax.swing.JTextField("1",4)
 lConst1 = javax.swing.JTextField("0",3)
 lConst2 = javax.swing.JTextField("0",3)
 lConst3 = javax.swing.JTextField("0",3)
@@ -642,12 +623,6 @@ panelConst3 = javax.swing.JPanel()
 panelConst3.add(javax.swing.JLabel("FV3:"))	
 panelConst3.add(lConst3)
 
-#panelAdres = javax.swing.JPanel()	
-#panelAdres.add(javax.swing.JLabel("Address"))	
-#panelAdres.add(lAddress)
-
-
-
 panelLNAdres = javax.swing.JPanel()	
 panelLNAdres.add(javax.swing.JLabel("LN Address:"))	
 panelLNAdres.add(lLNAddress)
@@ -664,7 +639,6 @@ panelPort.add(initButton)
 panelPort.add(panelConst1)
 panelPort.add(panelConst2)
 panelPort.add(panelConst3)
-#panelPort.add(panelAdres)
 panelPort.add(adresBox)
 panelPort.add(selectBox)
 panelPort.add(panelLNAdres)
