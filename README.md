@@ -142,7 +142,7 @@ If this device is sending data through the transmitter, this data is also read b
 
  # Test the LocoNet communication in extreme conditions: 
  
-To test the LocoNet communication in extreme conditions, it was necessary to add counters in the program code. These counters keep the most important data in connection with access to LocoNet. These counters can be requested via a Python script via. This communication also takes place via LocoNet! First the intention was to remove these counters from the code after the tests. But I finally saved them. The Python script can be found here:
+To test the LocoNet communication in extreme conditions, it was necessary to add counters in the program code. These counters keep the most important data in connection with access to LocoNet. These counters can be requested via a (JMRI) Python script. This communication also takes place via LocoNet! First the intention was to remove these counters from the code after the tests. But I finally saved them. The Python script can be found here:
 
 https://github.com/GeertGiebens/LocoNet_IO/blob/master/LocoNet_IO_Status_V1p1.py  
 
