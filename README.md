@@ -137,9 +137,9 @@ If this device is sending data through the transmitter, this data is also read b
 <img alt="open opps 1" src= https://github.com/GeertGiebens/LocoNet_IO/blob/master/LOCONET%20INTERRUPT%20PROGRAM.png>
   
 
- # Test the LocoNet communication in extreme conditions 
+ # Test the LocoNet communication in extreme conditions: 
  
-To test the LocoNet communication in extreme conditions, it was necessary to add counters in the program code. These counters keep the most important data in connection with access to LocoNet. These counters can be requested via a Python script via LocoNet itself. First the intention was to remove these counters from the code after the tests. But I finally saved them. The Python script can be found here.  This data may also be useful to follow the LocoNet for each device.
+To test the LocoNet communication in extreme conditions, it was necessary to add counters in the program code. These counters keep the most important data in connection with access to LocoNet. These counters can be requested via a Python script via LocoNet itself. First the intention was to remove these counters from the code after the tests. But I finally saved them. The Python script can be found here. https://github.com/GeertGiebens/LocoNet_IO/blob/master/LocoNet_IO_Status_V1p1.py  This data may also be useful to follow the LocoNet for each device.
 
 ...
 
