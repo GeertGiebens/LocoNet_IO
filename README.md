@@ -115,7 +115,7 @@ For the communication with LocoNet bus I use hardware inside de microcontroller.
 
 * Hardware detect  ‘Linebreak’ --> register: RCSTA,FERR=’1’. If another device send a LineBreak when this device read bit’s, then Byte-receiver have a framing error.
 
-*To avoid collisions to the minimum, the software resets the baud rate generator 60μs just before the transmitter starts transmitting.
+* To avoid collisions to the minimum, the software resets the baud rate generator 60μs just before the transmitter starts transmitting.
 
  
 
