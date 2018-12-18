@@ -1,6 +1,6 @@
 # LocoNet_IO
 
-under construction (last update: april/12/2018)
+under construction (last update: December/2018)
 
 
 > !!! My native language is not English. I hope I made the explanation how it work clear enough. !!!
@@ -136,6 +136,10 @@ If this device is sending data through the transmitter, this data is also read b
   
 <img alt="open opps 1" src= https://github.com/GeertGiebens/LocoNet_IO/blob/master/LOCONET%20INTERRUPT%20PROGRAM.png>
   
+
+ # Test the LocoNet communication in extreme conditions 
+ 
+To test the LocoNet communication in extreme conditions, it was necessary to add counters in the program code. These counters keep the most important data in connection with access to LocoNet. These counters can be requested via a Python script via LocoNet itself. First the intention was to remove these counters from the code after the tests. But I finally saved them. The Python script can be found here.  This data may also be useful to follow the LocoNet for each device.
 
 ...
 
