@@ -146,6 +146,8 @@ To test the LocoNet communication in extreme conditions, it was necessary to add
 
 https://github.com/GeertGiebens/LocoNet_IO/blob/master/LocoNet_IO_Status_V1p1.py  
 
+Save it, and you can start this script via JMRI software.
+
 <img alt="open opps 1" src=https://github.com/GeertGiebens/LocoNet_IO/blob/master/LocoNet%20IO%20Status%20Monitor.png>
 
 This data may also be useful to follow the LocoNet for each device.
