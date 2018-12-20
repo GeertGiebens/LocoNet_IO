@@ -41,25 +41,23 @@ hardware,  so the lay out of the PCB can be kept simple for DIY on stripboard o
 
 - PUSH BUTTON SWITCH ON/OFF:  PRESSED--> OPC_SW_REQ(ADRES1+DIR(‘0’ OR ‘1’)) + OPC_SW_REQ(ADRES2+DIR(‘0’ OR ‘1’)) + ... + OPC_SW_REQ(ADRES12+DIR(‘0’ OR ‘1’)) (if  needed)
 
-It is also possible to send other LocoNet codes for example locomotives: Speed, new direction, functions and so on
+
  
  
 ### Or you can choose between different output functions: 
 
-- RELAY:   OPC_SW_REQ(ADRES+DIR=1) then output is 'ON' / OPC_SW_REQ(ADRES+DIR=0) then output is 'OFF' 
+- DIGITAL OUT:  OPC_SW_REQ(ADRES+DIR=1) then output is 'ON' / OPC_SW_REQ(ADRES+DIR=0) then output is 'OFF' (And with many timer functions)
 
 - COIL1:   OPC_SW_REQ(ADRES+DIR=1) then output1 is 'ON' for 1-255ms (=parameter)
-
 - COIL2:   OPC_SW_REQ(ADRES+DIR=0) then output2 is 'ON' for 1-255ms (=parameter)
 
-- LED:   OPC_SW_REQ(ADRES+DIR=1) then LED is 'ON' / OPC_SW_REQ(ADRES+DIR=0) then LED is
-'OFF'
+- PWM/LED:   OPC_SW_REQ(ADRES+DIR=1) then Output is 'ON' with PWM / OPC_SW_REQ(ADRES+DIR=0) then Output is 'OFF' with PWM
 
 - LED BLINKING:   OPC_SW_REQ(ADRES+DIR=1) then LED is toggle 'ON'/'OFF' with 1Hz frequency  / OPC_SW_REQ(ADRES+DIR=0) then LED is 'OFF'
 
 - SERVO:   OPC_SW_REQ(ADRES+DIR=1) then servo is in state1 (parameter1) / OPC_SW_REQ(ADRES+DIR=0) then servo is in state2 (parameter2)
 
-Each output function has various parameters, later more about it. Outputs with Relay or Coil function requires a extra 5V relay board.
+Each output function has various parameters, later more about it. Outputs with Relay or Coil function requires a extra 5V relay board!
 
 
 
