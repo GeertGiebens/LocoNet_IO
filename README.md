@@ -10,7 +10,7 @@ under construction (last update: 20 December/2018)
 > The goal of this project is a simple LocoNet device for 30 Inputs or Outputs. You can choose for every port which function these have.  I shall explain how simple it is to upload the HEX code in the PIC µC. I shall explain how you can set up the function of the port with JMRI software. 
 >
 ><img alt="open opps 1" src=https://github.com/GeertGiebens/LocoNet_IO/blob/master/JMRI%20Python%20LocoNet%20IO%20program%20tool%20v1p51_picture2.png>
-
+>
 ><img alt="open opps 1" src=https://github.com/GeertGiebens/LocoNet_IO/blob/master/JMRI%20Python%20LocoNet%20IO%20program%20tool%20v1p51_picture1.png>
 >
 > The settings menu provides sufficient information during use. This by giving information when you use the computer mouse over the choice of settings. This is only a basic version, later it will certainly be extended.
