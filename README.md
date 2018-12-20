@@ -1,13 +1,13 @@
 # LocoNet_IO
 
-under construction (last update: 20 December/2018)
+under construction for 18F4620 µC (last update: 20 December/2018)
 
 
 > !!! My native language is not English. I hope I made the explanation how it work clear enough. !!!
 >
 > The assembler code is in Flemish. In a while I will translate it into English. 
 >
-> The goal of this project is a simple LocoNet device for 30 Inputs or Outputs. You can choose for every port which function these have.  I shall explain how simple it is to upload the HEX code in the PIC µC. I shall explain how you can set up the function of the port with JMRI Python script:
+> The goal of this project is a simple LocoNet device for 30 Inputs or Outputs. You can choose for every port which function these have.  I shall explain how simple it is to upload the HEX code in the PIC µC (later). I shall explain how you can set up the function of the port with JMRI Python script:
 >
 >https://github.com/GeertGiebens/LocoNet_IO/blob/master/LocoNet%20IO%20V1p52.py
 >
@@ -20,7 +20,7 @@ under construction (last update: 20 December/2018)
 
 
 ### Why 30 inputs/outputs? 
->A 40pin microcontroller PIC18F4620 or PIC18F4520 is quite cheap.  And the inputs/outputs are used faster than you think. For example, controlling LED's track signal (3-4 outputs); a control board with lay out tracks and so on. You do not have to use all the ports. I use them for modular construction.
+>A 40pin microcontroller PIC18F4620 (PIC18F4520) is quite cheap.  And the inputs/outputs are used faster than you think. For example, controlling LED's track signal (3-4 outputs); a control board with lay out tracks and so on. You do not have to use all the ports. I use them for modular construction.
 >
 ### DIY? 
 >The device  has a lot of hardware on-board.(byte-transmitter; byte-receiver; analog comparator and so on). I used a lot of this
