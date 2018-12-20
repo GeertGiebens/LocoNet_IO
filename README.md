@@ -8,7 +8,7 @@ under construction for 18F4620 µC (last update: 20 December/2018)
 > 
 > The explanation of the assembler code is in Flemish. In a while I will translate it into English. 
 >
-> The goal of this project is a simple LocoNet device for 30 Inputs or Outputs. You can choose for every port which function these have.  I shall explain how simple it is to upload the HEX code in the PIC µC (later). I shall explain how you can set up the function of the port with JMRI Python script:
+> The goal of this project is a simple LocoNet device for 30 Inputs/Outputs. You can choose for every port which function these have.  I shall explain how simple it is to upload the HEX code in the PIC µC (later). I shall explain how you can set up the function of the port with a JMRI Python script:
 >
 >https://github.com/GeertGiebens/LocoNet_IO/blob/master/LocoNet%20IO%20V1p52.py
 >
