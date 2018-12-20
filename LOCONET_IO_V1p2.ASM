@@ -75,7 +75,7 @@
 
     #DEFINE STATUS_COUNTERS 1 ;activeer diverse counters
 
-	#include LOCONET_IO_VARIABELEN_V1p2.INC
+    #include LOCONET_IO_VARIABELEN_V1p2.INC
 
     #include LOCONET_IO_EEPROM_V1p2.INC
 
@@ -123,13 +123,13 @@ INIT_MAIN
 
 ;INIT_OSCILATOR
 
-	    BSF OSCCON,IRCF0        ;zet oscilator op 32MHz (in deze volgorde bit's zetten!!)
-	    BSF OSCCON,IRCF1  
-	    BSF OSCTUNE,PLLEN  	
+        BSF OSCCON,IRCF0        ;zet oscilator op 32MHz (in deze volgorde bit's zetten!!)
+        BSF OSCCON,IRCF1  
+        BSF OSCTUNE,PLLEN  	
 		
 ;INIT Timer 3 op 60Hz --> interrupt TMR3IF
 
-	    CLRF TMR3L  
+        CLRF TMR3L  
     	CLRF TMR3H   
     	MOVLW b'00010001'
     	MOVWF T3CON  
@@ -293,7 +293,7 @@ INIT_POORTEN
         MACRO_INIT 30,POORT30
     ENDIF
 
-		MOVLB HIGH TBL_FUNCTIE
+        MOVLB HIGH TBL_FUNCTIE
         MOVF 0xE1,W,BANKED
         BZ $+4
         BSF 0xE0,6,BANKED
@@ -367,23 +367,23 @@ IM_SPR65
 	
 	;data van 0x2A0-0x2DF --> 0x400-0x43F 
 	
-	    MOVLW 64
-	    MOVWF HULPTEL
-	    MOVLW HIGH TBL_VAR1  ;selecteer bank waar de tabel VAR1
+        MOVLW 64
+        MOVWF HULPTEL
+        MOVLW HIGH TBL_VAR1  ;selecteer bank waar de tabel VAR1
         MOVWF FSR2H  
         MOVLW LOW TBL_VAR1 
         MOVWF FSR2L
-		MOVLW HIGH TBL_ADR1L  ;selecteer bank waar de tabel ADR1L
+        MOVLW HIGH TBL_ADR1L  ;selecteer bank waar de tabel ADR1L
         MOVWF FSR0H  
         MOVLW LOW TBL_ADR1L 
         MOVWF FSR0L
 IM_SPR70
-		MOVF POSTINC2,W
-		MOVWF POSTINC0	
-	    DECFSZ HULPTEL,F
-		BRA IM_SPR70
+        MOVF POSTINC2,W
+        MOVWF POSTINC0	
+        DECFSZ HULPTEL,F
+        BRA IM_SPR70
 		
-		MOVLB HIGH TBL_FUNCTIE
+        MOVLB HIGH TBL_FUNCTIE
         MOVF 0x1F,w,BANKED
         MOVWF DEVICENUMMER
 
@@ -397,7 +397,7 @@ IM_SPR70
 MAIN
         CALL INIT_MAIN                      ;LOCONET_IO_V1p2.ASM
         CALL INIT_DEVICE_COUNTERS           ;LOCONET_IO_DEVICE_COUNERS_V1p2.INC
-		CALL INIT_EEPROM_TO_RAM				;LOCONET_IO_V1p2.ASM
+        CALL INIT_EEPROM_TO_RAM				;LOCONET_IO_V1p2.ASM
         CALL INIT_POORTEN                   ;LOCONET_IO_V1p2.ASM
         CALL INIT_SERVO                     ;LOCONET_IO_SERVO.INC
         CALL INIT_LOCONET                   ;LOCONET_18F4X20_V1p2.INC   
