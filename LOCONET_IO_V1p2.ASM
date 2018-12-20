@@ -387,7 +387,7 @@ IM_SPR70
         MOVF 0x1F,w,BANKED
         MOVWF DEVICENUMMER
 
-		RETURN
+        RETURN
 
 
 ;**********************************************************
@@ -403,12 +403,12 @@ MAIN
         CALL INIT_LOCONET                   ;LOCONET_18F4X20_V1p2.INC   
 
 LUS
-	    BTFSS PIR2,TMR3IF  	                ;Timer3 overflow?
-	    BRA VOLGENDE
+        BTFSS PIR2,TMR3IF  	                ;Timer3 overflow?
+        BRA VOLGENDE
 		
-	    BCF PIR2,TMR3IF                 	;YES:  (wordt elke 16,6ms uitgevoerd 60Hz)	
-	    CALL RESET_SERVO                    ;  LOCONET_IO_SERVO.INC
-	    CALL UPDATE_LED                     ;  LOCONET_IO_LED.INC
+        BCF PIR2,TMR3IF                 	;YES:  (wordt elke 16,6ms uitgevoerd 60Hz)	
+        CALL RESET_SERVO                    ;  LOCONET_IO_SERVO.INC
+        CALL UPDATE_LED                     ;  LOCONET_IO_LED.INC
         CALL RELAIS                         ;  LOCONET_IO_RELAIS.INC
         IF STATUS_COUNTERS ==1
             INCREMENT_DEVICE_SECONDS_COUNTER
@@ -417,8 +417,8 @@ VOLGENDE
         CALL TEST_INGANG                    ;LOCONET_IO_INGANG_V1p2.INC
         CALL TEST_NIEUWE_TE_VERZENDEN_DATA  ;LOCONET_IO_PROCEDURES_V1p2.INC
         CALL DECODEER_LOCONET_DATA          ;LOCONET_DECODEER_V1p2.INC
-	    CALL SERVO                          ;LOCONET_IO_SERVO.INC
-	    CALL LED                            ;LOCONET_IO_LED.INC
+        CALL SERVO                          ;LOCONET_IO_SERVO.INC
+        CALL LED                            ;LOCONET_IO_LED.INC
         CALL SPOEL                          ;LOCONET_IO_SPOEL.INC
 
         GOTO LUS
