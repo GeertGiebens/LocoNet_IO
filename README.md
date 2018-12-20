@@ -142,7 +142,7 @@ If this device is sending data through the transmitter, this data is also read b
 <img alt="open opps 1" src= https://github.com/GeertGiebens/LocoNet_IO/blob/master/LOCONET%20INTERRUPT%20PROGRAM.png>
   
 
- # Test the LocoNet communication in extreme conditions: 
+ # LocoNet communication test in extreme conditions: 
  
 To test the LocoNet communication in extreme conditions, it was necessary to add counters in the program code. These counters keep the most important data in connection with access to LocoNet. These counters can be requested via a (JMRI) Python script. This communication also takes place via LocoNet! First the intention was to remove these counters from the code after the tests. But I finally saved them. The Python script can be found here:
 
@@ -154,11 +154,11 @@ Save it, and you can start this script via JMRI software.
 
 This data may also be useful to follow the LocoNet for each device.
 
-The following pictures show some snapshots of the tests.  Here was tested with 8 devices. The intention was to send as many 4 byte messages as possible per devices.
+The following pictures show some snapshots of the tests.  Here was tested with 8 µC (microcontrollers). The intention was to send as many 4 byte messages as possible per µC.
 
 <img alt="open opps 1" src=https://github.com/GeertGiebens/LocoNet_IO/blob/master/photo%20test%20extreme%20testing%20LocoNet.png>
 
-I also use the LocoNet monitor from JMRI for testing.  On this image you can see how 8 devices  each with its Switch address LT1 ... LT8 try to send a change of state via random access:
+I also use the LocoNet monitor from JMRI for testing.  On this image you can see how 8 µC each with its Switch address LT1 ... LT8 try to send a change of state via random access:
 
 <img alt="open opps 1" src=https://github.com/GeertGiebens/LocoNet_IO/blob/master/LocoNet%20Monitor%20printout%20DATA.png>
 
