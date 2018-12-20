@@ -91,7 +91,7 @@
 	GOTO High_Priority_Interrupt	;LOCONET_IO_LED.INC
 
     ORG 00018h
-	GOTO Low_Priority_Interrupt		;LOCONET_18F4620_V1p0.INC
+	GOTO Low_Priority_Interrupt		;LOCONET_18F4X20_V1p2.INC
 
 	
 ;********************************************************************************
@@ -400,28 +400,7 @@ MAIN
 		CALL INIT_EEPROM_TO_RAM				;LOCONET_IO_V1p2.ASM
         CALL INIT_POORTEN                   ;LOCONET_IO_V1p2.ASM
         CALL INIT_SERVO                     ;LOCONET_IO_SERVO.INC
-        CALL INIT_LOCONET                   ;LOCONET_18F4X20_V1p2.INC  
-        BRA LUS
-
-    CLRF DEVICENUMMER               ;test
-     BTFSS POORT1
-    BSF DEVICENUMMER,0
-    BTFSS POORT2
-    BSF DEVICENUMMER,1
-    BTFSS POORT3
-     BSF DEVICENUMMER,2
-    MOVLW 0x05                     ;Functie OR
-    MOVFF WREG,0x2E1
-     MOVFF DEVICENUMMER,0x2E2                ;SW1IN
-     MOVFF DEVICENUMMER,0x2E6                ;SWOUT
-    MOVLW 0x09
-    MOVFF WREG,0x2E4                                      ;SW2IN = 10   
-    INCF DEVICENUMMER,F 
-
-     MOVLW 0x01
-     MOVFF WREG,0x203                                      ;Functie poort 4 is SWITCH met adres 10
-     MOVLW 0x09
-     MOVFF WREG,0x403   
+        CALL INIT_LOCONET                   ;LOCONET_18F4X20_V1p2.INC   
 
 LUS
 	    BTFSS PIR2,TMR3IF  	                ;Timer3 overflow?
