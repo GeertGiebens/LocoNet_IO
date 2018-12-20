@@ -2,19 +2,10 @@
 ;***************************************************************************
 ;* LocoNet In/out module met PIC 18F4620 microcontroller                   *
 ;*                                                                         *
-;*  32 in-uitgangen met keuze uit:                                         *
-;*  - Servo uitgangen                                                      *
-;*  - logische uitgangen (5V Relais modules)                               *
-;*  - logische uitgangen puls (5V Relais modules voor wisselspoel)         *
-;*  - LED uitgangen (Fade in Fade out)                                     *
-;*  - bezetmelders (massa)                                                 *
-;*  - schakelaar; drukknop; enz... (met debouncing)                        *
-;*  - mogelijke toekomstige uitbreidingen                                  *
-;*  - mogelijkheid om toetsenbord en LCD display aan te sluiten            *
 ;*                                                                         *
 ;* Geschreven door Geert Giebens voor PIC 18F4620 microcontroller          *
 ;*                                                                         *
-;* Datum: 23-07-2017                      Versie LOCONET IO V1.1           *
+;* Datum: 13-06-2018                                                       *
 ;*                                                                         *
 ;* Filenaam: LOCONET_IO_LED.INC                                            *
 ;*                                                                         *
@@ -81,7 +72,7 @@ LED
         MACRO_LED 26,POORT26
         MACRO_LED 27,POORT27
         MACRO_LED 28,POORT28
-    IF DEBUG == 0
+    IF DEBUGGER == 0
         MACRO_LED 29,POORT29
         MACRO_LED 30,POORT30
     ENDIF
@@ -130,32 +121,56 @@ MFD_SPR8
     	BTFSS ((LOW TBL_BINAIR)+(LED_NR-1)),0,BANKED	    ;Is LED in FADE MODE?
     	BRA MFD_SPR10
 
+		MOVF ((LOW TBL_CONST3)+(LED_NR-1)),W,BANKED
+		RLNCF WREG,W
+;		ADDLW 2
+        MOVWF TABEL_GOTO
+
     	BTFSS ((LOW TBL_BINAIR)+(LED_NR-1)),2,BANKED 	;  JA: is gewenste LED stand MAX
     	BRA MFD_SPR20
+		
+        BCF STATUS,C                                	;      JA: verhoog VAR1+VAR2 met waarde CONST3
+		CALL TABEL0
+		ADDWF ((LOW TBL_VAR2)+(LED_NR-1)),F,BANKED
+		BTFSC STATUS,C
+		INCF ((LOW TBL_VAR1)+(LED_NR-1)),F,BANKED 
+        BZ MFD_SPR15
+		CALL TABEL256		
+    	ADDWF ((LOW TBL_VAR1)+(LED_NR-1)),F,BANKED  
 
-        BCF STATUS,C
-    	MOVF ((LOW TBL_CONST3)+(LED_NR-1)),W,BANKED	    ;      JA: verhoog VAR1 met waarde CONST3
-    	ADDWF ((LOW TBL_VAR1)+(LED_NR-1)),F,BANKED   	;          Is VAR1 >= MAX dan VAR1=MAX en einde Fade IN	naar MAX	 
     	BC MFD_SPR15
     	MOVF ((LOW TBL_VAR1)+(LED_NR-1)),W,BANKED
-    	CPFSLT ((LOW TBL_CONST2)+(LED_NR-1)),BANKED
+    	CPFSLT ((LOW TBL_CONST2)+(LED_NR-1)),BANKED  	;          Is VAR1 >= MAX dan VAR1=MAX en einde Fade IN	naar MAX	
     	BRA MFD_END
+
 MFD_SPR15
     	MOVFF (TBL_CONST2+(LED_NR-1)),(TBL_VAR1+(LED_NR-1))
+		CLRF  ((LOW TBL_VAR2)+(LED_NR-1)),BANKED
     	BCF ((LOW TBL_BINAIR)+(LED_NR-1)),0,BANKED
     	BSF ((LOW TBL_BINAIR)+(LED_NR-1)),1,BANKED
 	    BRA MFD_END
 
+		
 MFD_SPR20
-        BCF STATUS,C
-    	MOVF ((LOW TBL_CONST3)+(LED_NR-1)),W,BANKED  	;      NEE: verlaag VAR1 met waarde CONST3
+        BCF STATUS,C                                	;      NEE: verlaag VAR1+VAR2 met waarde CONST3                     
+		CALL TABEL0
+		SUBWF ((LOW TBL_VAR2)+(LED_NR-1)),F,BANKED
+        BCF COPY_C,0
+        BTFSC STATUS,C
+        BSF COPY_C,0	
+		CALL TABEL256
+		BTFSS COPY_C,0
+		INCFSZ WREG,F
     	SUBWF ((LOW TBL_VAR1)+(LED_NR-1)),F,BANKED	    ;          Is VAR1 <= MIN dan VAR1=MIN en einde Fade OUT naar MIN
+
     	BNC MFD_SPR30
     	MOVF ((LOW TBL_VAR1)+(LED_NR-1)),W,BANKED
     	CPFSGT ((LOW TBL_CONST1)+(LED_NR-1)),BANKED
     	BRA MFD_END
+
 MFD_SPR30
     	MOVFF (TBL_CONST1+(LED_NR-1)),(TBL_VAR1+(LED_NR-1))
+		CLRF  ((LOW TBL_VAR2)+(LED_NR-1)),BANKED
     	BCF ((LOW TBL_BINAIR)+(LED_NR-1)),0,BANKED
     	BCF ((LOW TBL_BINAIR)+(LED_NR-1)),1,BANKED
     	BRA MFD_END	
@@ -217,10 +232,244 @@ UL_SPR10
     	MACRO_FADE_LED 26
     	MACRO_FADE_LED 27
     	MACRO_FADE_LED 28
-    IF DEBUG == 0
+    IF DEBUGGER == 0
     	MACRO_FADE_LED 29
     	MACRO_FADE_LED 30
     ENDIF
-
- 
+		
     	RETURN
+		
+    ORG ($ -($%256) +256)
+
+TABEL256
+        MOVF PCL,W
+        MOVF TABEL_GOTO,W
+	    ADDWF PCL,F
+	    RETLW .42
+	    RETLW .4
+        RETLW .2
+        RETLW .1
+        RETLW .1
+        RETLW .0
+        RETLW .0
+        RETLW .0
+        RETLW .0
+        RETLW .0
+        RETLW .0
+        RETLW .0
+        RETLW .0
+        RETLW .0
+        RETLW .0
+        RETLW .0
+        RETLW .0
+        RETLW .0
+        RETLW .0
+        RETLW .0
+        RETLW .0
+        RETLW .0
+        RETLW .0
+        RETLW .0
+        RETLW .0
+        RETLW .0
+        RETLW .0
+        RETLW .0
+        RETLW .0
+        RETLW .0
+        RETLW .0
+        RETLW .0
+        RETLW .0
+        RETLW .0
+        RETLW .0
+        RETLW .0
+        RETLW .0
+        RETLW .0
+        RETLW .0
+        RETLW .0
+        RETLW .0
+        RETLW .0
+        RETLW .0
+        RETLW .0
+        RETLW .0
+        RETLW .0
+        RETLW .0
+        RETLW .0
+        RETLW .0
+        RETLW .0
+        RETLW .0
+        RETLW .0
+        RETLW .0
+        RETLW .0
+        RETLW .0
+        RETLW .0
+        RETLW .0
+        RETLW .0
+        RETLW .0
+        RETLW .0
+        RETLW .0
+        RETLW .0
+        RETLW .0
+        RETLW .0
+        RETLW .0
+        RETLW .0
+        RETLW .0
+        RETLW .0
+        RETLW .0
+        RETLW .0
+        RETLW .0
+        RETLW .0
+        RETLW .0
+        RETLW .0
+        RETLW .0
+        RETLW .0
+        RETLW .0
+        RETLW .0
+        RETLW .0
+        RETLW .0
+        RETLW .0
+        RETLW .0
+        RETLW .0
+        RETLW .0
+        RETLW .0
+        RETLW .0
+        RETLW .0
+        RETLW .0
+        RETLW .0
+        RETLW .0
+        RETLW .0
+        RETLW .0
+        RETLW .0
+        RETLW .0
+        RETLW .0
+        RETLW .0
+        RETLW .0
+        RETLW .0
+        RETLW .0
+        RETLW .0
+        RETLW .42
+        RETLW .42
+        RETLW .21
+        RETLW .14
+        RETLW .10
+        RETLW .8
+        RETLW .7
+        RETLW .6
+        RETLW .5
+        RETLW .4
+        RETLW .4
+
+    ORG ($ -($%256) +256)
+TABEL0
+        MOVF PCL,W
+        MOVF TABEL_GOTO,w
+	    ADDWF PCL,F
+        RETLW .170		
+        RETLW .68
+        RETLW .34
+        RETLW .108
+        RETLW .17
+        RETLW .218
+        RETLW .182
+        RETLW .156
+        RETLW .136
+        RETLW .121
+        RETLW .109
+        RETLW .99
+        RETLW .91
+        RETLW .84
+        RETLW .78
+        RETLW .72
+        RETLW .68
+        RETLW .64
+        RETLW .60
+        RETLW .57
+        RETLW .54
+        RETLW .52
+        RETLW .49
+        RETLW .47
+        RETLW .45
+        RETLW .43
+        RETLW .42
+        RETLW .40
+        RETLW .39
+        RETLW .37
+        RETLW .36
+        RETLW .35
+        RETLW .34
+        RETLW .33
+        RETLW .32
+        RETLW .31
+        RETLW .30
+        RETLW .29
+        RETLW .28
+        RETLW .28
+        RETLW .27
+        RETLW .26
+        RETLW .26
+        RETLW .25
+        RETLW .24
+        RETLW .24
+        RETLW .23
+        RETLW .23
+        RETLW .22
+        RETLW .22
+        RETLW .21
+        RETLW .21
+        RETLW .21
+        RETLW .20
+        RETLW .20
+        RETLW .19
+        RETLW .19
+        RETLW .19
+        RETLW .18
+        RETLW .18
+        RETLW .18
+        RETLW .18
+        RETLW .18
+        RETLW .18
+        RETLW .18
+        RETLW .18
+        RETLW .18
+        RETLW .18
+        RETLW .18
+        RETLW .18
+        RETLW .18
+        RETLW .18
+        RETLW .18
+        RETLW .18
+        RETLW .18
+        RETLW .18
+        RETLW .18
+        RETLW .18
+        RETLW .18
+        RETLW .18
+        RETLW .18
+        RETLW .18
+        RETLW .18
+        RETLW .18
+        RETLW .18
+        RETLW .18
+        RETLW .18
+        RETLW .18
+        RETLW .18
+        RETLW .18
+        RETLW .18
+        RETLW .18
+        RETLW .18
+        RETLW .18
+        RETLW .18
+        RETLW .18
+        RETLW .18
+        RETLW .18
+        RETLW .18
+        RETLW .18
+        RETLW .170
+        RETLW .170
+        RETLW .85
+        RETLW .56
+        RETLW .170
+        RETLW .136
+        RETLW .28
+        RETLW .24
+        RETLW .85
+        RETLW .189
+        RETLW .68

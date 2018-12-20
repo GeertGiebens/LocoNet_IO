@@ -1,19 +1,7 @@
 
 ;***************************************************************************
-;* LocoNet In/out module met PIC 18F4620/18F4520 microcontroller           *
-;*                                                                         *
-;*  30 in-uitgangen met keuze uit:                                         *
-;*  - Servo uitgangen                                                      *
-;*  - logische uitgangen (5V Relais modules)                               *
-;*  - logische uitgangen puls (5V Relais modules voor wisselspoel)         *
-;*  - LED uitgangen (Fade in Fade out)                                     *
-;*  - bezetmelders (massa)                                                 *
-;*  - schakelaar; drukknop; enz... (met debouncing)                        *
-;*  - mogelijke toekomstige uitbreidingen                                  *
-;*                                                                         *
-;* Geschreven door Geert Giebens voor PIC 18F4620 microcontroller          *
-;*                                                                         *
-;* Datum: 12 feb 2018                      Versie LOCONET IO V1.2          *
+;* LocoNet In/out module met PIC 18F4620 microcontroller                   *
+;* Datum: 29 Nov 2018                      Versie LOCONET IO V1.2          *
 ;*                                                                         *
 ;* Filenaam: LOCONET_IO_INGANG_V1p2.INC                                    *
 ;*                                                                         *
@@ -41,6 +29,7 @@
 MACRO_INGANG	MACRO POORTIN_NR, POORTIN,POORTINBIT
 
 	        LOCAL MI_END, MI_SPR1,MI_SPR2,MI_SPR10, MI_SPR15, MI_SPR20, MI_SPR25, MI_SPR30, MI_SPR40, MI_SPR50, MI_SPR55, MI_SPR70, MI_SPR60, MI_SPR80
+            LOCAL MI_SPR01, MI_SPR02
 	
 
         BTFSS ((LOW TBL_FUNCTIE) + (POORTIN_NR-1)),0,BANKED	;Is functie ingang? NEE --> dan einde MACRO
@@ -52,8 +41,16 @@ MACRO_INGANG	MACRO POORTIN_NR, POORTIN,POORTINBIT
 ;********************************************************************
 
         BTFSS POORTIN,POORTINBIT
-        GOTO MI_SPR1
+        GOTO MI_SPR01
 
+        BTFSS ((LOW TBL_CONST3)+(POORTIN_NR-1)),0,BANKED        ;CONST3,bit0 = 0 dan Massa detectie anders +5V detectie
+        GOTO MI_SPR02
+        GOTO MI_SPR1
+MI_SPR01
+        BTFSS ((LOW TBL_CONST3)+(POORTIN_NR-1)),0,BANKED
+        GOTO MI_SPR1       
+
+MI_SPR02
         MOVF ((LOW TBL_VAR1)+(POORTIN_NR-1)),W,BANKED
         BTFSC STATUS,Z
         GOTO MI_END                                             ;Indien VAR1 niet 0 dan VAR1 verlagen	
@@ -92,22 +89,25 @@ MACRO_INGANG	MACRO POORTIN_NR, POORTIN,POORTINBIT
         BNZ $+6
         GOTO MI_END
 
-        MOVLW 0xB2              
+        MOVLW OPC_INPUT_REP              
         MOVWF TE_VERZENDEN_BYTE1
         MOVLW .4
         MOVWF AANTAL_BYTES
 
         MOVF ((LOW TBL_CONST1) + (POORTIN_NR-1)),W,BANKED
+        DECF WREG,W
+        ANDLW b'11110000'
+        SWAPF WREG,W
         MOVWF TE_VERZENDEN_BYTE3
+
+        MOVF ((LOW TBL_CONST1) + (POORTIN_NR-1)),W,BANKED
+        DECF WREG,W
         ANDLW b'00001111'
         SWAPF WREG,W
         IORWF ((LOW TBL_CONST2) + (POORTIN_NR-1)),W,BANKED
         MOVWF TE_VERZENDEN_BYTE2
         RRNCF TE_VERZENDEN_BYTE2,F
         BCF TE_VERZENDEN_BYTE2,7
-        SWAPF TE_VERZENDEN_BYTE2,W
-        ANDLW b'00001111'
-        MOVWF TE_VERZENDEN_BYTE3
         BTFSC ((LOW TBL_CONST2) + (POORTIN_NR-1)),0,BANKED
         BSF TE_VERZENDEN_BYTE3,5
         CALL TE_VERZENDEN_BYTES_IN_BUFFER
@@ -118,18 +118,18 @@ MACRO_INGANG	MACRO POORTIN_NR, POORTIN,POORTINBIT
 ;********** FUNCTIE INGANG BUTTON  **********************************
 
 MI_SPR10
-        MOVLW b'00000011'        
+        MOVLW FUNCTIE_BUTTON       
         CPFSEQ((LOW TBL_FUNCTIE) + (POORTIN_NR-1)),BANKED      
         BRA MI_SPR20
         BTFSC ((LOW TBL_BINAIR)+(POORTIN_NR-1)),3,BANKED       
         BRA MI_SPR15
-        BSF ((LOW TBL_BINAIR)+(POORTIN_NR-1)),3,BANKED
+;        BSF ((LOW TBL_BINAIR)+(POORTIN_NR-1)),3,BANKED
         MOVLW b'00100000'
         IORWF TE_VERZENDEN_BYTE3,F
         CALL TE_VERZENDEN_BYTES_IN_BUFFER
         GOTO MI_END
 MI_SPR15
-        BCF ((LOW TBL_BINAIR)+(POORTIN_NR-1)),3,BANKED
+;        BCF ((LOW TBL_BINAIR)+(POORTIN_NR-1)),3,BANKED
         CALL TE_VERZENDEN_BYTES_IN_BUFFER
         GOTO MI_END
 
@@ -159,15 +159,14 @@ MI_SPR30
 ;********** FUNCTIE INGANG ON/OFF  **********************************
 
 MI_SPR40
-        MOVLW b'00100001'                                     
+        MOVLW FUNCTIE_ON_OFF                                     
         CPFSEQ((LOW TBL_FUNCTIE) + (POORTIN_NR-1)),BANKED
         GOTO MI_END
 
 
 ;********** FUNCTIE ON/OFF ADR1 **************
 
-        BTFSS ((LOW TBL_CONST1) + (POORTIN_NR-1)),0,BANKED   
-        BRA $+30
+
         LFSR 0,TBL_ADR1L
         MOVLW (POORTIN_NR-1)
         ADDWF FSR0L,F
@@ -176,19 +175,15 @@ MI_SPR40
         LFSR 0,TBL_ADR1H                            	
         MOVLW (POORTIN_NR-1)
         ADDWF FSR0L,F
+        BTFSS INDF0,4
+        BRA $+10
         MOVF INDF0,W
+        ANDLW b'00101111'
         MOVWF TE_VERZENDEN_BYTE3
-        BTFSS ((LOW TBL_CONST1) + (POORTIN_NR-1)),1,BANKED   
-        BRA $+4
-        BSF TE_VERZENDEN_BYTE3,5
-	CALL TE_VERZENDEN_BYTES_IN_BUFFER
+    	CALL TE_VERZENDEN_BYTES_IN_BUFFER
 
 ;********** FUNCTIE ON/OFF ADR2 **************
 
-
-
-        BTFSS ((LOW TBL_CONST1) + (POORTIN_NR-1)),2,BANKED   
-        BRA $+30
         LFSR 0,TBL_ADR2L
         MOVLW (POORTIN_NR-1)
         ADDWF FSR0L,F
@@ -197,18 +192,16 @@ MI_SPR40
         LFSR 0,TBL_ADR2H                            	
         MOVLW (POORTIN_NR-1)
         ADDWF FSR0L,F
+        BTFSS INDF0,4
+        BRA $+10
         MOVF INDF0,W
+        ANDLW b'00101111'
         MOVWF TE_VERZENDEN_BYTE3
-        BTFSS ((LOW TBL_CONST1) + (POORTIN_NR-1)),3,BANKED   
-        BRA $+4
-        BSF TE_VERZENDEN_BYTE3,5
-	CALL TE_VERZENDEN_BYTES_IN_BUFFER
+    	CALL TE_VERZENDEN_BYTES_IN_BUFFER
 
 
 ;********** FUNCTIE ON/OFF ADR3 **************
 
-        BTFSS ((LOW TBL_CONST1) + (POORTIN_NR-1)),4,BANKED   
-        BRA $+30
         LFSR 0,TBL_ADR3L
         MOVLW (POORTIN_NR-1)
         ADDWF FSR0L,F
@@ -217,18 +210,15 @@ MI_SPR40
         LFSR 0,TBL_ADR3H                            	
         MOVLW (POORTIN_NR-1)
         ADDWF FSR0L,F
+        BTFSS INDF0,4
+        BRA $+10
         MOVF INDF0,W
+        ANDLW b'00101111'
         MOVWF TE_VERZENDEN_BYTE3
-        BTFSS ((LOW TBL_CONST1) + (POORTIN_NR-1)),5,BANKED   
-        BRA $+4
-        BSF TE_VERZENDEN_BYTE3,5
-	CALL TE_VERZENDEN_BYTES_IN_BUFFER
-
+    	CALL TE_VERZENDEN_BYTES_IN_BUFFER
 
 ;********** FUNCTIE ON/OFF ADR4 **************
 
-        BTFSS ((LOW TBL_CONST1) + (POORTIN_NR-1)),6,BANKED   
-        BRA $+30
         LFSR 0,TBL_ADR4L
         MOVLW (POORTIN_NR-1)
         ADDWF FSR0L,F
@@ -237,18 +227,16 @@ MI_SPR40
         LFSR 0,TBL_ADR4H                            	
         MOVLW (POORTIN_NR-1)
         ADDWF FSR0L,F
+        BTFSS INDF0,4
+        BRA $+10
         MOVF INDF0,W
+        ANDLW b'00101111'
         MOVWF TE_VERZENDEN_BYTE3
-        BTFSS ((LOW TBL_CONST1) + (POORTIN_NR-1)),7,BANKED   
-        BRA $+4
-        BSF TE_VERZENDEN_BYTE3,5
-	CALL TE_VERZENDEN_BYTES_IN_BUFFER
+    	CALL TE_VERZENDEN_BYTES_IN_BUFFER
 
 
 ;********** FUNCTIE ON/OFF ADR5 **************
 
-        BTFSS ((LOW TBL_CONST2) + (POORTIN_NR-1)),0,BANKED   
-        BRA $+30
         LFSR 0,TBL_ADR5L
         MOVLW (POORTIN_NR-1)
         ADDWF FSR0L,F
@@ -257,18 +245,16 @@ MI_SPR40
         LFSR 0,TBL_ADR5H                            	
         MOVLW (POORTIN_NR-1)
         ADDWF FSR0L,F
+        BTFSS INDF0,4
+        BRA $+10
         MOVF INDF0,W
+        ANDLW b'00101111'
         MOVWF TE_VERZENDEN_BYTE3
-        BTFSS ((LOW TBL_CONST2) + (POORTIN_NR-1)),1,BANKED   
-        BRA $+4
-        BSF TE_VERZENDEN_BYTE3,5
-	CALL TE_VERZENDEN_BYTES_IN_BUFFER
+    	CALL TE_VERZENDEN_BYTES_IN_BUFFER
 
 
 ;********** FUNCTIE ON/OFF ADR6 **************
 
-        BTFSS ((LOW TBL_CONST2) + (POORTIN_NR-1)),2,BANKED   
-        BRA $+30
         LFSR 0,TBL_ADR6L
         MOVLW (POORTIN_NR-1)
         ADDWF FSR0L,F
@@ -277,18 +263,16 @@ MI_SPR40
         LFSR 0,TBL_ADR6H                            	
         MOVLW (POORTIN_NR-1)
         ADDWF FSR0L,F
+        BTFSS INDF0,4
+        BRA $+10
         MOVF INDF0,W
+        ANDLW b'00101111'
         MOVWF TE_VERZENDEN_BYTE3
-        BTFSS ((LOW TBL_CONST2) + (POORTIN_NR-1)),3,BANKED   
-        BRA $+4
-        BSF TE_VERZENDEN_BYTE3,5
-	CALL TE_VERZENDEN_BYTES_IN_BUFFER
+    	CALL TE_VERZENDEN_BYTES_IN_BUFFER
 
 
 ;********** FUNCTIE ON/OFF ADR7 **************
 
-        BTFSS ((LOW TBL_CONST2) + (POORTIN_NR-1)),4,BANKED   
-        BRA $+30
         LFSR 0,TBL_ADR7L
         MOVLW (POORTIN_NR-1)
         ADDWF FSR0L,F
@@ -297,18 +281,16 @@ MI_SPR40
         LFSR 0,TBL_ADR7H                            	
         MOVLW (POORTIN_NR-1)
         ADDWF FSR0L,F
+        BTFSS INDF0,4
+        BRA $+10
         MOVF INDF0,W
+        ANDLW b'00101111'
         MOVWF TE_VERZENDEN_BYTE3
-        BTFSS ((LOW TBL_CONST2) + (POORTIN_NR-1)),5,BANKED   
-        BRA $+4
-        BSF TE_VERZENDEN_BYTE3,5
-	CALL TE_VERZENDEN_BYTES_IN_BUFFER
+    	CALL TE_VERZENDEN_BYTES_IN_BUFFER
 
 
 ;********** FUNCTIE ON/OFF ADR8 **************
 
-        BTFSS ((LOW TBL_CONST2) + (POORTIN_NR-1)),6,BANKED   
-        BRA $+30
         LFSR 0,TBL_ADR8L
         MOVLW (POORTIN_NR-1)
         ADDWF FSR0L,F
@@ -317,18 +299,16 @@ MI_SPR40
         LFSR 0,TBL_ADR8H                            	
         MOVLW (POORTIN_NR-1)
         ADDWF FSR0L,F
+        BTFSS INDF0,4
+        BRA $+10
         MOVF INDF0,W
+        ANDLW b'00101111'
         MOVWF TE_VERZENDEN_BYTE3
-        BTFSS ((LOW TBL_CONST2) + (POORTIN_NR-1)),7,BANKED   
-        BRA $+4
-        BSF TE_VERZENDEN_BYTE3,5
-	CALL TE_VERZENDEN_BYTES_IN_BUFFER
+    	CALL TE_VERZENDEN_BYTES_IN_BUFFER
 
 
 ;********** FUNCTIE ON/OFF ADR9 **************
 
-        BTFSS ((LOW TBL_CONST3) + (POORTIN_NR-1)),0,BANKED   
-        BRA $+30
         LFSR 0,TBL_ADR9L
         MOVLW (POORTIN_NR-1)
         ADDWF FSR0L,F
@@ -337,18 +317,16 @@ MI_SPR40
         LFSR 0,TBL_ADR9H                            	
         MOVLW (POORTIN_NR-1)
         ADDWF FSR0L,F
+        BTFSS INDF0,4
+        BRA $+10
         MOVF INDF0,W
+        ANDLW b'00101111'
         MOVWF TE_VERZENDEN_BYTE3
-        BTFSS ((LOW TBL_CONST3) + (POORTIN_NR-1)),1,BANKED   
-        BRA $+4
-        BSF TE_VERZENDEN_BYTE3,5
-	CALL TE_VERZENDEN_BYTES_IN_BUFFER
+    	CALL TE_VERZENDEN_BYTES_IN_BUFFER
 
 
 ;********** FUNCTIE ON/OFF ADR10 **************
 
-        BTFSS ((LOW TBL_CONST3) + (POORTIN_NR-1)),2,BANKED   
-        BRA $+30
         LFSR 0,TBL_ADR10L
         MOVLW (POORTIN_NR-1)
         ADDWF FSR0L,F
@@ -357,18 +335,16 @@ MI_SPR40
         LFSR 0,TBL_ADR10H                            	
         MOVLW (POORTIN_NR-1)
         ADDWF FSR0L,F
+        BTFSS INDF0,4
+        BRA $+10
         MOVF INDF0,W
+        ANDLW b'00101111'
         MOVWF TE_VERZENDEN_BYTE3
-        BTFSS ((LOW TBL_CONST3) + (POORTIN_NR-1)),3,BANKED   
-        BRA $+4
-        BSF TE_VERZENDEN_BYTE3,5
     	CALL TE_VERZENDEN_BYTES_IN_BUFFER
 
 
 ;********** FUNCTIE ON/OFF ADR11 **************
 
-        BTFSS ((LOW TBL_CONST3) + (POORTIN_NR-1)),4,BANKED   
-        BRA $+30
         LFSR 0,TBL_ADR11L
         MOVLW (POORTIN_NR-1)
         ADDWF FSR0L,F
@@ -377,18 +353,16 @@ MI_SPR40
         LFSR 0,TBL_ADR11H                            	
         MOVLW (POORTIN_NR-1)
         ADDWF FSR0L,F
+        BTFSS INDF0,4
+        BRA $+10
         MOVF INDF0,W
+        ANDLW b'00101111'
         MOVWF TE_VERZENDEN_BYTE3
-        BTFSS ((LOW TBL_CONST3) + (POORTIN_NR-1)),5,BANKED   
-        BRA $+4
-        BSF TE_VERZENDEN_BYTE3,5
     	CALL TE_VERZENDEN_BYTES_IN_BUFFER
 
 
 ;********** FUNCTIE ON/OFF ADR12 **************
 
-        BTFSS ((LOW TBL_CONST3) + (POORTIN_NR-1)),6,BANKED   
-        BRA $+30
         LFSR 0,TBL_ADR12L
         MOVLW (POORTIN_NR-1)
         ADDWF FSR0L,F
@@ -397,12 +371,13 @@ MI_SPR40
         LFSR 0,TBL_ADR12H                            	
         MOVLW (POORTIN_NR-1)
         ADDWF FSR0L,F
+        BTFSS INDF0,4
+        BRA $+10
         MOVF INDF0,W
+        ANDLW b'00101111'
         MOVWF TE_VERZENDEN_BYTE3
-        BTFSS ((LOW TBL_CONST3) + (POORTIN_NR-1)),7,BANKED   
-        BRA $+4
-        BSF TE_VERZENDEN_BYTE3,5
     	CALL TE_VERZENDEN_BYTES_IN_BUFFER
+        GOTO MI_END
 
 ;**********************************************************
 ;********** INGANG = MASSA ********************************
@@ -447,26 +422,31 @@ MI_SPR2
         BNZ $+6
         GOTO MI_END
 
-        MOVLW 0xB2              
+        MOVLW OPC_INPUT_REP               
         MOVWF TE_VERZENDEN_BYTE1
         MOVLW .4
         MOVWF AANTAL_BYTES
 
         MOVF ((LOW TBL_CONST1) + (POORTIN_NR-1)),W,BANKED
+        DECF WREG,W
+        ANDLW b'11110000'
+        SWAPF WREG,W
         MOVWF TE_VERZENDEN_BYTE3
+
+        MOVF ((LOW TBL_CONST1) + (POORTIN_NR-1)),W,BANKED
+        DECF WREG,W
         ANDLW b'00001111'
         SWAPF WREG,W
         IORWF ((LOW TBL_CONST2) + (POORTIN_NR-1)),W,BANKED
         MOVWF TE_VERZENDEN_BYTE2
         RRNCF TE_VERZENDEN_BYTE2,F
         BCF TE_VERZENDEN_BYTE2,7
-        SWAPF TE_VERZENDEN_BYTE2,W
-        ANDLW b'00001111'
-        MOVWF TE_VERZENDEN_BYTE3
         BTFSC ((LOW TBL_CONST2) + (POORTIN_NR-1)),0,BANKED
         BSF TE_VERZENDEN_BYTE3,5
         BSF TE_VERZENDEN_BYTE3,4
         CALL TE_VERZENDEN_BYTES_IN_BUFFER
+
+
 
         GOTO MI_END
 
@@ -544,8 +524,6 @@ MI_SPR80
 
 ;********** FUNCTIE ON/OFF ADR1 **************
 
-        BTFSS ((LOW TBL_CONST1) + (POORTIN_NR-1)),0,BANKED   
-        BRA $+32
         LFSR 0,TBL_ADR1L
         MOVLW (POORTIN_NR-1)
         ADDWF FSR0L,F
@@ -554,20 +532,16 @@ MI_SPR80
         LFSR 0,TBL_ADR1H                            	
         MOVLW (POORTIN_NR-1)
         ADDWF FSR0L,F
+        BTFSS INDF0,4
+        BRA $+10
         MOVF INDF0,W
+        ANDLW b'00111111'
         MOVWF TE_VERZENDEN_BYTE3
-        BSF TE_VERZENDEN_BYTE3,4
-        BTFSS ((LOW TBL_CONST1) + (POORTIN_NR-1)),1,BANKED   
-        BRA $+4
-        BSF TE_VERZENDEN_BYTE3,5
-	CALL TE_VERZENDEN_BYTES_IN_BUFFER
+    	CALL TE_VERZENDEN_BYTES_IN_BUFFER
 
 ;********** FUNCTIE ON/OFF ADR2 **************
 
 
-
-        BTFSS ((LOW TBL_CONST1) + (POORTIN_NR-1)),2,BANKED   
-        BRA $+32
         LFSR 0,TBL_ADR2L
         MOVLW (POORTIN_NR-1)
         ADDWF FSR0L,F
@@ -576,19 +550,16 @@ MI_SPR80
         LFSR 0,TBL_ADR2H                            	
         MOVLW (POORTIN_NR-1)
         ADDWF FSR0L,F
+        BTFSS INDF0,4
+        BRA $+10
         MOVF INDF0,W
+        ANDLW b'00111111'
         MOVWF TE_VERZENDEN_BYTE3
-        BSF TE_VERZENDEN_BYTE3,4
-        BTFSS ((LOW TBL_CONST1) + (POORTIN_NR-1)),3,BANKED   
-        BRA $+4
-        BSF TE_VERZENDEN_BYTE3,5
-	CALL TE_VERZENDEN_BYTES_IN_BUFFER
+    	CALL TE_VERZENDEN_BYTES_IN_BUFFER
 
 
 ;********** FUNCTIE ON/OFF ADR3 **************
 
-        BTFSS ((LOW TBL_CONST1) + (POORTIN_NR-1)),4,BANKED   
-        BRA $+32
         LFSR 0,TBL_ADR3L
         MOVLW (POORTIN_NR-1)
         ADDWF FSR0L,F
@@ -597,19 +568,16 @@ MI_SPR80
         LFSR 0,TBL_ADR3H                            	
         MOVLW (POORTIN_NR-1)
         ADDWF FSR0L,F
+        BTFSS INDF0,4
+        BRA $+10
         MOVF INDF0,W
+        ANDLW b'00111111'
         MOVWF TE_VERZENDEN_BYTE3
-        BSF TE_VERZENDEN_BYTE3,4
-        BTFSS ((LOW TBL_CONST1) + (POORTIN_NR-1)),5,BANKED   
-        BRA $+4
-        BSF TE_VERZENDEN_BYTE3,5
-	CALL TE_VERZENDEN_BYTES_IN_BUFFER
+    	CALL TE_VERZENDEN_BYTES_IN_BUFFER
 
 
 ;********** FUNCTIE ON/OFF ADR4 **************
 
-        BTFSS ((LOW TBL_CONST1) + (POORTIN_NR-1)),6,BANKED   
-        BRA $+32
         LFSR 0,TBL_ADR4L
         MOVLW (POORTIN_NR-1)
         ADDWF FSR0L,F
@@ -618,19 +586,16 @@ MI_SPR80
         LFSR 0,TBL_ADR4H                            	
         MOVLW (POORTIN_NR-1)
         ADDWF FSR0L,F
+        BTFSS INDF0,4
+        BRA $+10
         MOVF INDF0,W
+        ANDLW b'00111111'
         MOVWF TE_VERZENDEN_BYTE3
-        BSF TE_VERZENDEN_BYTE3,4
-        BTFSS ((LOW TBL_CONST1) + (POORTIN_NR-1)),7,BANKED   
-        BRA $+4
-        BSF TE_VERZENDEN_BYTE3,5
-	CALL TE_VERZENDEN_BYTES_IN_BUFFER
+    	CALL TE_VERZENDEN_BYTES_IN_BUFFER
 
 
 ;********** FUNCTIE ON/OFF ADR5 **************
 
-        BTFSS ((LOW TBL_CONST2) + (POORTIN_NR-1)),0,BANKED   
-        BRA $+32
         LFSR 0,TBL_ADR5L
         MOVLW (POORTIN_NR-1)
         ADDWF FSR0L,F
@@ -639,19 +604,16 @@ MI_SPR80
         LFSR 0,TBL_ADR5H                            	
         MOVLW (POORTIN_NR-1)
         ADDWF FSR0L,F
+        BTFSS INDF0,4
+        BRA $+10
         MOVF INDF0,W
+        ANDLW b'00111111'
         MOVWF TE_VERZENDEN_BYTE3
-        BSF TE_VERZENDEN_BYTE3,4
-        BTFSS ((LOW TBL_CONST2) + (POORTIN_NR-1)),1,BANKED   
-        BRA $+4
-        BSF TE_VERZENDEN_BYTE3,5
-	CALL TE_VERZENDEN_BYTES_IN_BUFFER
+    	CALL TE_VERZENDEN_BYTES_IN_BUFFER
 
 
 ;********** FUNCTIE ON/OFF ADR6 **************
 
-        BTFSS ((LOW TBL_CONST2) + (POORTIN_NR-1)),2,BANKED   
-        BRA $+32
         LFSR 0,TBL_ADR6L
         MOVLW (POORTIN_NR-1)
         ADDWF FSR0L,F
@@ -660,19 +622,16 @@ MI_SPR80
         LFSR 0,TBL_ADR6H                            	
         MOVLW (POORTIN_NR-1)
         ADDWF FSR0L,F
+        BTFSS INDF0,4
+        BRA $+10
         MOVF INDF0,W
+        ANDLW b'00111111'
         MOVWF TE_VERZENDEN_BYTE3
-        BSF TE_VERZENDEN_BYTE3,4
-        BTFSS ((LOW TBL_CONST2) + (POORTIN_NR-1)),3,BANKED   
-        BRA $+4
-        BSF TE_VERZENDEN_BYTE3,5
-	CALL TE_VERZENDEN_BYTES_IN_BUFFER
+    	CALL TE_VERZENDEN_BYTES_IN_BUFFER
 
 
 ;********** FUNCTIE ON/OFF ADR7 **************
 
-        BTFSS ((LOW TBL_CONST2) + (POORTIN_NR-1)),4,BANKED   
-        BRA $+32
         LFSR 0,TBL_ADR7L
         MOVLW (POORTIN_NR-1)
         ADDWF FSR0L,F
@@ -681,19 +640,16 @@ MI_SPR80
         LFSR 0,TBL_ADR7H                            	
         MOVLW (POORTIN_NR-1)
         ADDWF FSR0L,F
+        BTFSS INDF0,4
+        BRA $+10
         MOVF INDF0,W
+        ANDLW b'00111111'
         MOVWF TE_VERZENDEN_BYTE3
-        BSF TE_VERZENDEN_BYTE3,4
-        BTFSS ((LOW TBL_CONST2) + (POORTIN_NR-1)),5,BANKED   
-        BRA $+4
-        BSF TE_VERZENDEN_BYTE3,5
-	CALL TE_VERZENDEN_BYTES_IN_BUFFER
+    	CALL TE_VERZENDEN_BYTES_IN_BUFFER
 
 
 ;********** FUNCTIE ON/OFF ADR8 **************
 
-        BTFSS ((LOW TBL_CONST2) + (POORTIN_NR-1)),6,BANKED   
-        BRA $+32
         LFSR 0,TBL_ADR8L
         MOVLW (POORTIN_NR-1)
         ADDWF FSR0L,F
@@ -702,19 +658,16 @@ MI_SPR80
         LFSR 0,TBL_ADR8H                            	
         MOVLW (POORTIN_NR-1)
         ADDWF FSR0L,F
+        BTFSS INDF0,4
+        BRA $+10
         MOVF INDF0,W
+        ANDLW b'00111111'
         MOVWF TE_VERZENDEN_BYTE3
-        BSF TE_VERZENDEN_BYTE3,4
-        BTFSS ((LOW TBL_CONST2) + (POORTIN_NR-1)),7,BANKED   
-        BRA $+4
-        BSF TE_VERZENDEN_BYTE3,5
-	CALL TE_VERZENDEN_BYTES_IN_BUFFER
+    	CALL TE_VERZENDEN_BYTES_IN_BUFFER
 
 
 ;********** FUNCTIE ON/OFF ADR9 **************
 
-        BTFSS ((LOW TBL_CONST3) + (POORTIN_NR-1)),0,BANKED   
-        BRA $+32
         LFSR 0,TBL_ADR9L
         MOVLW (POORTIN_NR-1)
         ADDWF FSR0L,F
@@ -723,19 +676,16 @@ MI_SPR80
         LFSR 0,TBL_ADR9H                            	
         MOVLW (POORTIN_NR-1)
         ADDWF FSR0L,F
+        BTFSS INDF0,4
+        BRA $+10
         MOVF INDF0,W
+        ANDLW b'00111111'
         MOVWF TE_VERZENDEN_BYTE3
-        BSF TE_VERZENDEN_BYTE3,4
-        BTFSS ((LOW TBL_CONST3) + (POORTIN_NR-1)),1,BANKED   
-        BRA $+4
-        BSF TE_VERZENDEN_BYTE3,5
-	CALL TE_VERZENDEN_BYTES_IN_BUFFER
+    	CALL TE_VERZENDEN_BYTES_IN_BUFFER
 
 
 ;********** FUNCTIE ON/OFF ADR10 **************
 
-        BTFSS ((LOW TBL_CONST3) + (POORTIN_NR-1)),2,BANKED   
-        BRA $+32
         LFSR 0,TBL_ADR10L
         MOVLW (POORTIN_NR-1)
         ADDWF FSR0L,F
@@ -744,19 +694,16 @@ MI_SPR80
         LFSR 0,TBL_ADR10H                            	
         MOVLW (POORTIN_NR-1)
         ADDWF FSR0L,F
+        BTFSS INDF0,4
+        BRA $+10
         MOVF INDF0,W
+        ANDLW b'00111111'
         MOVWF TE_VERZENDEN_BYTE3
-        BSF TE_VERZENDEN_BYTE3,4
-        BTFSS ((LOW TBL_CONST3) + (POORTIN_NR-1)),3,BANKED   
-        BRA $+4
-        BSF TE_VERZENDEN_BYTE3,5
     	CALL TE_VERZENDEN_BYTES_IN_BUFFER
 
 
 ;********** FUNCTIE ON/OFF ADR11 **************
 
-        BTFSS ((LOW TBL_CONST3) + (POORTIN_NR-1)),4,BANKED   
-        BRA $+32
         LFSR 0,TBL_ADR11L
         MOVLW (POORTIN_NR-1)
         ADDWF FSR0L,F
@@ -765,19 +712,16 @@ MI_SPR80
         LFSR 0,TBL_ADR11H                            	
         MOVLW (POORTIN_NR-1)
         ADDWF FSR0L,F
+        BTFSS INDF0,4
+        BRA $+10
         MOVF INDF0,W
+        ANDLW b'00111111'
         MOVWF TE_VERZENDEN_BYTE3
-        BSF TE_VERZENDEN_BYTE3,4
-        BTFSS ((LOW TBL_CONST3) + (POORTIN_NR-1)),5,BANKED   
-        BRA $+4
-        BSF TE_VERZENDEN_BYTE3,5
     	CALL TE_VERZENDEN_BYTES_IN_BUFFER
 
 
 ;********** FUNCTIE ON/OFF ADR12 **************
 
-        BTFSS ((LOW TBL_CONST3) + (POORTIN_NR-1)),6,BANKED   
-        BRA $+32
         LFSR 0,TBL_ADR12L
         MOVLW (POORTIN_NR-1)
         ADDWF FSR0L,F
@@ -786,12 +730,11 @@ MI_SPR80
         LFSR 0,TBL_ADR12H                            	
         MOVLW (POORTIN_NR-1)
         ADDWF FSR0L,F
+        BTFSS INDF0,4
+        BRA $+10
         MOVF INDF0,W
+        ANDLW b'00111111'
         MOVWF TE_VERZENDEN_BYTE3
-        BSF TE_VERZENDEN_BYTE3,4
-        BTFSS ((LOW TBL_CONST3)+ (POORTIN_NR-1)),7,BANKED   
-        BRA $+4
-        BSF TE_VERZENDEN_BYTE3,5
     	CALL TE_VERZENDEN_BYTES_IN_BUFFER
 
 	GOTO MI_END
@@ -841,7 +784,7 @@ TEST_INGANG
 	MACRO_INGANG 27,POORT27
 	MACRO_INGANG 28,POORT28
 
-    IF DEBUG == 0 
+    IF DEBUGGER == 0 
 	  MACRO_INGANG 29,POORT29
 	  MACRO_INGANG 30,POORT30
     ENDIF

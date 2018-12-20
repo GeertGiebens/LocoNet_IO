@@ -1,18 +1,10 @@
 
 ;***************************************************************************
-;* LocoNet In/out module met PIC 18F4620/18F4520 microcontroller           *
-;*  30 in-uitgangen met keuze uit:                                         *
-;*  - Servo uitgangen                                                      *
-;*  - logische uitgangen (5V Relais modules)                               *
-;*  - logische uitgangen puls (5V Relais modules voor wisselspoel)         *
-;*  - LED uitgangen (Fade in Fade out)                                     *
-;*  - bezetmelders (massa)                                                 *
-;*  - schakelaar; drukknop; enz... (met debouncing)                        *
-;*  - mogelijke toekomstige uitbreidingen                                  *
+;* LocoNet In/out module met PIC 18F4620 microcontroller                   *
 ;*                                                                         *
-;* Geschreven door Geert Giebens voor PIC 18F4620/18F4520 microcontroller  *
+;* Geschreven door Geert Giebens voor PIC 18F4620 microcontroller          *
 ;*                                                                         *
-;* Datum: 12 feb 2018                       Versie LOCONET IO V1.2         *
+;* Datum: 29 Nov 2018                       Versie LOCONET IO V1.2         *
 ;*                                                                         *
 ;* Filenaam: LOCONET_IO_V1p2.ASM                                           *
 ;*     	                                                                   *
@@ -34,9 +26,15 @@
 ;*     	                                                                   *
 ;* Aanpassingen versie 1.2:                                                *
 ;*  -12/02/18: aanpassingen voor gebruik ook met 18F4520    	           *
+;*  -03/05/18: System status tellers toegevoegd.   	                       *
+;*  -23/05/18: Mogelijkheid toegevoegd om logische waarde uitgang te       *
+;*             wijzigen (enkel bij spoel en relais)                        *
+;*  -18/07/18: 4 Logische poorten toegevoegd. ( op poort 31-34)  	       *
+;*  -04/10/18: Functie INGANG ook met +5V actief     	                   *
+;*  -30/10/18: Functie DIGITAAL ook met vertraagd uitschakelen    	       *
 ;*     	                                                                   *
 ;*                         _____________________                           *
-;*     (Vpp)   PROGRAM    | 1  RE3 *  *  RB7 40 |      poort 30 (PGD)      *
+;*        (Vpp)   PNDA    | 1  RE3 *  *  RB7 40 |      poort 30 (PGD)      *
 ;*      Comperator Vin+   | 2  RA0  **   RB6 39 |      poort 29 (PGC)      *
 ;*             poort  1   | 3  RA1       RB5 38 |      poort 28            *
 ;*             poort  2   | 4  RA2       RB4 37 |      poort 27            *
@@ -62,11 +60,6 @@
 
 	   LIST P=18F4620 
 	   #include <P18F4620.INC> 
- 
-;	   LIST P=18F4520 
-;	   #include <P18F4520.INC> 
- 
-
 
      CONFIG OSC =  INTIO67
      CONFIG PWRT = ON, BOREN = OFF
@@ -78,14 +71,13 @@
 
     RADIX DEC
 
-    #DEFINE DEBUG 1
-	#DEFINE PIC18F4620 1
+    #DEFINE DEBUGGER 0 ;(1= debug: program adres ; poort 29 en 30 uitgeschakeld
 
-    #include LOCONET_IO_EEPROM_V1p2.INC
+    #DEFINE STATUS_COUNTERS 1 ;activeer diverse counters
 
 	#include LOCONET_IO_VARIABELEN_V1p2.INC
 
-
+    #include LOCONET_IO_EEPROM_V1p2.INC
 
 	
 ;******************************************************************************
@@ -94,7 +86,7 @@
 
     ORG 00000h
  	GOTO MAIN						;LOCONET_IO_V1p2.ASM
-
+ 
     ORG 00008h
 	GOTO High_Priority_Interrupt	;LOCONET_IO_LED.INC
 
@@ -103,6 +95,8 @@
 
 	
 ;********************************************************************************
+
+    #INCLUDE LOCONET_IO_DEVICE_COUNTERS_V1p2.INC
 
     #include LOCONET_18F4X20_V1p2.INC
 
@@ -152,6 +146,12 @@ INIT_MAIN
         MOVLW 0Fh                   ;geen analoge ingangen
         MOVWF ADCON1
 
+;INIT EEPROM
+
+        BCF EECON1,EEPGD
+        BCF EECON1,CFGS
+        BSF EECON1,WREN
+
         RETURN
 
 
@@ -161,7 +161,7 @@ INIT_MAIN
 
 MACRO_INIT MACRO POORTNR ,POORT, POORTBIT
      
-        LOCAL MI_END,MI_SPR10, MI_SPR20,MI_SPR30, MI_SPR25, MI_SPR35, MI_SPR40, MI_SPR50, MI_SPR32,MI_SPR45
+        LOCAL MI_END,MI_SPR10, MI_SPR20,MI_SPR30, MI_SPR25, MI_SPR35, MI_SPR40, MI_SPR50, MI_SPR32,MI_SPR45, MI_SPR42, MI_SPR47
 
         MOVF (LOW TBL_FUNCTIE + (POORTNR-1)),F,BANKED       ;is FUNCTIE = NOP dan poort = ingang
         BNZ MI_SPR10 
@@ -174,6 +174,8 @@ MI_SPR10
 
         BSF (POORT+12h),POORTBIT                            ;zet TRIS BIT register op ingang
         CLRF (LOW TBL_VAR1 + (POORTNR-1)),BANKED           ;startwaarde antidender=00
+        BTFSC (LOW TBL_CONST3 + (POORTNR-1)),0,BANKED 
+        SETF (LOW TBL_VAR1 + (POORTNR-1)),BANKED           ;startwaarde antidender=FF
         CLRF (LOW TBL_BINAIR +(POORTNR-1)),BANKED          ;startwaarde logische toestand ingang ='0'
         BRA MI_END
         
@@ -183,17 +185,13 @@ MI_SPR20
         BTFSS ((LOW TBL_FUNCTIE) +(POORTNR-1)),7,BANKED      ;********IS FUNCTIE SERVO?********
         BRA MI_SPR30
         BCF POORT,POORTBIT                                   ;  JA: zet logische toestand uitgang = '0'
-;        BCF (LOW TBL_BINAIR +(POORTNR-1)),0,BANKED
-;        BCF (LOW TBL_BINAIR +(POORTNR-1)),3,BANKED
         BSF (LOW TBL_BINAIR +(POORTNR-1)),5,BANKED           ;     Ook initiatie
         BTFSC (LOW TBL_BINAIR +(POORTNR-1)),1,BANKED         ;      afhankelijk van huidige stand servo zet startwaarde servotijd op MIN of MAX
         BRA MI_SPR25
-;        BCF (LOW TBL_BINAIR +(POORTNR-1)),2,BANKED
         MOVF (LOW TBL_CONST1 +(POORTNR-1)),W,BANKED
         MOVWF (LOW TBL_VAR1 + (POORTNR-1)),BANKED
         BRA MI_END
 MI_SPR25
-;        BSF (LOW TBL_BINAIR +(POORTNR-1)),2,BANKED
         MOVF (LOW TBL_CONST2 +(POORTNR-1)),W,BANKED
         MOVWF (LOW TBL_VAR1 + (POORTNR-1)),BANKED
         BRA MI_END
@@ -222,13 +220,24 @@ MI_SPR35
 MI_SPR40
         BTFSS ((LOW TBL_FUNCTIE) +(POORTNR-1)),4,BANKED      ;********IS FUNCTIE SPOEL (COIL)
         BRA MI_SPR45
-        BCF POORT,POORTBIT                                   ;  JA: zet logische toestand uitgang = '0'
-        BRA MI_END    
+        BTFSC ((LOW TBL_CONST3)+ (POORTNR-1)),0,BANKED
+        BRA MI_SPR42
+        BCF POORT,POORTBIT                                   ;  JA: zet logische toestand uitgang = niet actieve toestand volgens bit0 Const3
+        BRA MI_END
+MI_SPR42
+        BSF POORT,POORTBIT
+        BRA MI_END          
 
 MI_SPR45
         BTFSS ((LOW TBL_FUNCTIE) +(POORTNR-1)),3,BANKED      ;********IS FUNCTIE RELAIS
         BRA MI_SPR50
-        BCF POORT,POORTBIT                                   ;  JA: zet logische toestand uitgang = '0'
+        BTFSC ((LOW TBL_CONST3)+ (POORTNR-1)),0,BANKED
+        BRA MI_SPR47
+        BCF POORT,POORTBIT                                   ;  JA: zet logische toestand uitgang = niet actieve toestand volgend bit0 Const3
+        BRA MI_END
+MI_SPR47
+        BSF POORT,POORTBIT
+        BRA MI_END 
 
         MOVF ((LOW TBL_CONST2)+ (POORTNR-1)),W,BANKED       ;    als T2 niet 0 is dan reset BINAIR (voorkomt dat relais even aan gaat met T2)
         BZ MI_END
@@ -279,10 +288,24 @@ INIT_POORTEN
         MACRO_INIT 27,POORT27
         MACRO_INIT 28,POORT28
 
-    IF DEBUG == 1   ;BIJ DEBUGGER WORDEN POORT 29 EN 30 NIET GEBRUIKT!
+    IF DEBUGGER == 1   ;BIJ DEBUGGER WORDEN POORT 29 EN 30 NIET GEBRUIKT!
         MACRO_INIT 29,POORT29
         MACRO_INIT 30,POORT30
     ENDIF
+
+		MOVLB HIGH TBL_FUNCTIE
+        MOVF 0xE1,W,BANKED
+        BZ $+4
+        BSF 0xE0,6,BANKED
+        MOVF 0xE9,W,BANKED
+        BZ $+4
+        BSF 0xE8,6,BANKED
+        MOVF 0xF1,W,BANKED
+        BZ $+4
+        BSF 0xF0,6,BANKED
+        MOVF 0xF9,W,BANKED
+        BZ $+4
+        BSF 0xF8,6,BANKED
         RETURN
 		
 ;**********************************************************
@@ -308,10 +331,14 @@ IM_SPR50
         MOVWF POSTINC2
         INCF EEADR,F  
         DECFSZ HULPTEL,F  
-        BRA IM_SPR50
+        BRA IM_SPR50	
+        INCF EEADRH,F 
 
-	IF PIC18F4620 == 1		
-        INCF EEADRH,F    
+        MOVLW HIGH TBL_ADR1L  ;selecteer bank waar de tabel ADR1L staat
+        MOVWF FSR2H  
+        MOVLW LOW TBL_ADR1L
+        MOVWF FSR2L  
+  
 IM_SPR55
         BSF EECON1, RD            ; EEPROM Read
         MOVF EEDATA, W            ; W = EEDATA
@@ -337,9 +364,8 @@ IM_SPR65
         INCF EEADR,F  
         DECFSZ HULPTEL,F  
         BRA IM_SPR65
-	ENDIF
 	
-	;data van 0x2A0-0x2DF --> 0x300-0x33F 
+	;data van 0x2A0-0x2DF --> 0x400-0x43F 
 	
 	    MOVLW 64
 	    MOVWF HULPTEL
@@ -357,8 +383,8 @@ IM_SPR70
 	    DECFSZ HULPTEL,F
 		BRA IM_SPR70
 		
-		MOVLB HIGH TBL_INSTELLINGEN
-        MOVF LOW TBL_INSTELLINGEN,w
+		MOVLB HIGH TBL_FUNCTIE
+        MOVF 0x1F,w,BANKED
         MOVWF DEVICENUMMER
 
 		RETURN
@@ -370,10 +396,32 @@ IM_SPR70
 
 MAIN
         CALL INIT_MAIN                      ;LOCONET_IO_V1p2.ASM
+        CALL INIT_DEVICE_COUNTERS           ;LOCONET_IO_DEVICE_COUNERS_V1p2.INC
 		CALL INIT_EEPROM_TO_RAM				;LOCONET_IO_V1p2.ASM
         CALL INIT_POORTEN                   ;LOCONET_IO_V1p2.ASM
         CALL INIT_SERVO                     ;LOCONET_IO_SERVO.INC
-        CALL INIT_LOCONET                   ;LOCONET_18F4X20_V1p2.INC     
+        CALL INIT_LOCONET                   ;LOCONET_18F4X20_V1p2.INC  
+        BRA LUS
+
+    CLRF DEVICENUMMER               ;test
+     BTFSS POORT1
+    BSF DEVICENUMMER,0
+    BTFSS POORT2
+    BSF DEVICENUMMER,1
+    BTFSS POORT3
+     BSF DEVICENUMMER,2
+    MOVLW 0x05                     ;Functie OR
+    MOVFF WREG,0x2E1
+     MOVFF DEVICENUMMER,0x2E2                ;SW1IN
+     MOVFF DEVICENUMMER,0x2E6                ;SWOUT
+    MOVLW 0x09
+    MOVFF WREG,0x2E4                                      ;SW2IN = 10   
+    INCF DEVICENUMMER,F 
+
+     MOVLW 0x01
+     MOVFF WREG,0x203                                      ;Functie poort 4 is SWITCH met adres 10
+     MOVLW 0x09
+     MOVFF WREG,0x403   
 
 LUS
 	    BTFSS PIR2,TMR3IF  	                ;Timer3 overflow?
@@ -383,7 +431,9 @@ LUS
 	    CALL RESET_SERVO                    ;  LOCONET_IO_SERVO.INC
 	    CALL UPDATE_LED                     ;  LOCONET_IO_LED.INC
         CALL RELAIS                         ;  LOCONET_IO_RELAIS.INC
-
+        IF STATUS_COUNTERS ==1
+            INCREMENT_DEVICE_SECONDS_COUNTER
+        ENDIF
 VOLGENDE
         CALL TEST_INGANG                    ;LOCONET_IO_INGANG_V1p2.INC
         CALL TEST_NIEUWE_TE_VERZENDEN_DATA  ;LOCONET_IO_PROCEDURES_V1p2.INC
@@ -391,6 +441,7 @@ VOLGENDE
 	    CALL SERVO                          ;LOCONET_IO_SERVO.INC
 	    CALL LED                            ;LOCONET_IO_LED.INC
         CALL SPOEL                          ;LOCONET_IO_SPOEL.INC
+
         GOTO LUS
 
         END 

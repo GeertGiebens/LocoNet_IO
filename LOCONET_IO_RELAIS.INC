@@ -2,74 +2,80 @@
 ;***************************************************************************
 ;* LocoNet In/out module met PIC 18F4620 microcontroller                   *
 ;*                                                                         *
-;*  32 in-uitgangen met keuze uit:                                         *
-;*  - Servo uitgangen                                                      *
-;*  - logische uitgangen (5V Relais modules)                               *
-;*  - logische uitgangen puls (5V Relais modules voor wisselspoel)         *
-;*  - LED uitgangen (Fade in Fade out)                                     *
-;*  - bezetmelders (massa)                                                 *
-;*  - schakelaar; drukknop; enz... (met debouncing)                        *
-;*  - mogelijke toekomstige uitbreidingen                                  *
-;*  - mogelijkheid om toetsenbord en LCD display aan te sluiten            *
-;*                                                                         *
 ;* Geschreven door Geert Giebens voor PIC 18F4620 microcontroller          *
 ;*                                                                         *
-;* Datum: 23 JUL 2017                      Versie LOCONET IO V1.1          *
+;* Datum: 30 OKT 2018                      Versie LOCONET IO V1.1          *
 ;*                                                                         *
 ;* Filenaam: LOCONET_IO_RELAIS.INC                                         *
 ;*                                                                         *
 ;***************************************************************************
 
+;RELAIS prodedure wordt 60 keer per seconde uitgevoerd.
 
 ;**********************************************************
 ;*******  MACRO RELAIS   **********************************
 ;**********************************************************
 
-; Const1 = T1 wachttijd tijd voordat relais aangestuurd wordt 0-255s 0s is direct
-; Const2 = T2 tijd dat relais aangestuurd wordt 1-255s  waarbij 0 altijd is totdat LN opdracht geeft om niet meer aan te sturen
-; Var1 = telt van 60 tot 0 = 1s
-; Var2 = secondenteller 0-255s 
 
-;RELAIs prodedure wordt 60 keer per seconde uitgevoerd
+; FV1 = T1: als gewenste stand '1' wordt, dan is T1 wachttijd voordat uitgang aangestuurd wordt 1-255s 
+;                                         als T1= 0s dan uitgang direct aansturen
+; FV2 = T2: als T2 =0 dan uitgang volgt direct 'gewenste stand' na T1
+;       T2: als FV3.bit2 = '0' uitgang zal T2 1-255s aangestuurd blijven en daarna uitschakelen, 
+;                              uitgang zal direct uitschakelen als 'gewenste stand' laag wordt
+;       T3: als FV3.bit2 = '1' uitgang zal T3 1-255s aangestuurd blijven nadat 'gewenste stand' laag is geworden
+; FV3.bit0 = '0' dan uitgang actief = +5V
+;          = '1' dan uitgang actief = MASSA
+; FV3.bit1 = '0' dan uitgang eenmalig doorlopen
+;          = '1' dan uitgang repeterend met T1 'UIT' en T2 'AAN' ... (enkel te gebruiken bij FV3.bit2='0' en T1 en T2 geen 0s)
+; Var1 = telt van 60 tot 0 = 1s
+; Var2 = secondenteller 1-255s tot 0s
+
 
 ;Waarden van BINAIR b'76543210'
-;                       |||| b=1 waarde T2 is 0 (relais blijft actief)
-;                       |||| 
-;                       |||b=1 T1 is bezig
-;                       ||b= vorige toestand bit4 BINAIR (detectie dat er een overgang is van '0' --> '1' 
-;                       |b=1 Gewenste stand spoel
-;                       b=1 T2 is bezig
+;                      ||||| 
+;                      ||||| 
+;                      ||||b=0 T1 is voorbij
+;                      |||b= vorige toestand bit4 BINAIR (detectie dat er een overgang is van '0' --> '1' -->'0'
+;                      ||b=1 'Gewenste stand' uitgang
+;                      |b=0 T2 is voorbij
+;                      b=0 T3 is voorbij
 
 MACRO_RELAIS MACRO RELAISNR,RELAISPOORT,RELAISPOORTBIT
 
-        LOCAL RL_END, RL_SPR10, RL_SPR5, RL_SPR15, RL_SPR20, RL_SPR25
+    LOCAL RL_END, RL_SPR10, RL_SPR5, RL_SPR15, RL_SPR20, RL_SPR25, RL_SPR22, RL_SPR30, RL_SPR40
 
-        BTFSS ((LOW TBL_FUNCTIE) + (RELAISNR-1)),3,BANKED	;Is functie relais?
-        BRA RL_END                                          ;   Nee: dan volgende poort
 
-        BTFSS ((LOW TBL_BINAIR) + (RELAISNR-1)),4,BANKED     
-	BRA RL_SPR10
+    BTFSS ((LOW TBL_FUNCTIE) + (RELAISNR-1)),3,BANKED	;Is functie relais?
+    BRA RL_END                                          ;   Nee: dan volgende poort
 
-	BTFSC ((LOW TBL_BINAIR) + (RELAISNR-1)),3,BANKED	; is er een nieuwe overgang van bit4 0-->1 dan start eventueel timing proces
+
+    BTFSS ((LOW TBL_BINAIR) + (RELAISNR-1)),4,BANKED    ;Is gewenste stand spoel ='1'  (bit4)  
+	BRA RL_SPR10                                        ; JA0:
+   
+	BTFSC ((LOW TBL_BINAIR) + (RELAISNR-1)),3,BANKED	;   JA: is er een overgang van bit4 (0-->1) 
 	BRA RL_SPR5
-	BSF ((LOW TBL_BINAIR) + (RELAISNR-1)),3,BANKED
-	BSF ((LOW TBL_BINAIR) + (RELAISNR-1)),2,BANKED
+	
+    MOVLW b'01111100'                                   ;       JA: Herstart volledig timing proces met T1 
+    MOVWF ((LOW TBL_BINAIR) + (RELAISNR-1)),BANKED	
 
-	MOVF ((LOW TBL_CONST1) + (RELAISNR-1)),W,BANKED		; is T1 (CONST1) =0 dan volgende stap anders start T1
-	BZ RL_SPR15
+	MOVF ((LOW TBL_CONST1) + (RELAISNR-1)),W,BANKED		;           is T1 (FV1)>'0' 
+	BZ RL_SPR15                                         ;               JA1: dan start T1   NEE: start 'eventueel?' T2 -->SPR15
 	MOVWF ((LOW TBL_VAR2) + (RELAISNR-1)),BANKED
 	MOVLW 60
 	MOVWF ((LOW TBL_VAR1) + (RELAISNR-1)),BANKED
+	
+    BTFSC ((LOW TBL_CONST3)+ (RELAISNR-1)),0,BANKED     ;                   RESET uitgang
+    BRA $+6
+    BCF RELAISPOORT,RELAISPOORTBIT                   
+    BRA RL_END
+    BSF RELAISPOORT,RELAISPOORTBIT	  
 	BRA RL_END
 
 
-RL_SPR5
-	BTFSC ((LOW TBL_BINAIR) + (RELAISNR-1)),0,BANKED	;is uitgang actief, en moet deze actief blijven -->doe niks
-	BRA RL_END
-
-	BTFSC ((LOW TBL_BINAIR) + (RELAISNR-1)),5,BANKED	;Is T2 bezig?
-	BRA RL_SPR25						; NEE: verminder T1
-	DECFSZ ((LOW TBL_VAR1) + (RELAISNR-1)),F,BANKED
+RL_SPR5                                                 ;         NEE:
+	BTFSS ((LOW TBL_BINAIR) + (RELAISNR-1)),2,BANKED    ;             Is T1 bezig?
+	BRA RL_SPR25
+	DECFSZ ((LOW TBL_VAR1) + (RELAISNR-1)),F,BANKED     ;                JA2: verminder T1 tot 0s dan start 'eventueel?' T2 -->SPR15 
 	BRA RL_END
 	MOVLW 60 
 	MOVWF ((LOW TBL_VAR1) + (RELAISNR-1)),BANKED
@@ -78,32 +84,90 @@ RL_SPR5
 	
 
 RL_SPR15
-	BSF ((LOW TBL_BINAIR) + (RELAISNR-1)),5,BANKED		; is T1 voorbij dan start T2  is T2 (const2) = 0 dan blijft uitgang actief
-        BSF RELAISPOORT,RELAISPOORTBIT
-	MOVF ((LOW TBL_CONST2) + (RELAISNR-1)),W,BANKED
-	BNZ RL_SPR20
+	BCF ((LOW TBL_BINAIR) + (RELAISNR-1)),2,BANKED      ;               NEE1: geef aan dat T1 voorbij is	
 	
-	BSF ((LOW TBL_BINAIR) + (RELAISNR-1)),0,BANKED
-	BRA RL_END	
+    BTFSC ((LOW TBL_CONST3)+ (RELAISNR-1)),0,BANKED     ;                    SET uitgang
+    BRA $+6
+    BSF RELAISPOORT,RELAISPOORTBIT                   
+    BRA $+4 
+    BCF RELAISPOORT,RELAISPOORTBIT
 
-RL_SPR20
-	MOVWF ((LOW TBL_VAR2) + (RELAISNR-1)),BANKED
+    BTFSC ((LOW TBL_CONST3)+ (RELAISNR-1)),2,BANKED     ;                    Als FV3.bit2=1 dan zal uitgang GESET blijven en einde T2 -->SPR22
+	BRA RL_SPR22
+	
+	MOVF ((LOW TBL_CONST2) + (RELAISNR-1)),W,BANKED     ;                    laad waarde T2, Indien 0 dan zal uitgang GESET blijven en einde T2 -->SPR22
+	BZ RL_SPR22 
+
+	MOVWF ((LOW TBL_VAR2) + (RELAISNR-1)),BANKED        ;                    laad waarde voor T2
 	MOVLW 60
 	MOVWF ((LOW TBL_VAR1) + (RELAISNR-1)),BANKED
 	BRA RL_END
-
+	
+RL_SPR22
+    BCF ((LOW TBL_BINAIR) + (RELAISNR-1)),5,BANKED      ;                    geef aan dat T2 voorbij is		
+	BRA RL_END
+	
 RL_SPR25
-	DECFSZ ((LOW TBL_VAR1) + (RELAISNR-1)),F,BANKED		; is T2 voorbij dan uitgang niet meer actief		
+	BTFSS ((LOW TBL_BINAIR) + (RELAISNR-1)),5,BANKED    ;                NEE2:Is T2 bezig?
+	BRA RL_END                                          ;                       NEE: einde
+	DECFSZ ((LOW TBL_VAR1) + (RELAISNR-1)),F,BANKED		;                       JA: is T2 voorbij dan uitgang niet meer GESET		
 	BRA RL_END
 	MOVLW 60 
 	MOVWF ((LOW TBL_VAR1) + (RELAISNR-1)),BANKED
 	DECFSZ ((LOW TBL_VAR2) + (RELAISNR-1)),F,BANKED
 	BRA RL_END
 
+    BCF ((LOW TBL_BINAIR) + (RELAISNR-1)),5,BANKED			
+    BTFSC ((LOW TBL_CONST3)+ (RELAISNR-1)),0,BANKED  
+    BRA $+6
+    BCF RELAISPOORT,RELAISPOORTBIT                  
+    BRA $+4
+    BSF RELAISPOORT,RELAISPOORTBIT 
+
+    BTFSS ((LOW TBL_CONST3)+ (RELAISNR-1)),1,BANKED     ;                       Indien repeterend, dan herstart 
+    BRA RL_END  
+	MOVLW b'00010000'
+    MOVWF ((LOW TBL_BINAIR) + (RELAISNR-1)),BANKED
+    BRA RL_END    
+
+
 RL_SPR10
-	BCF RELAISPOORT,RELAISPOORTBIT
-	CLRF ((LOW TBL_BINAIR) + (RELAISNR-1)),BANKED	
+	BTFSS ((LOW TBL_BINAIR) + (RELAISNR-1)),3,BANKED	;  NEE0: is er een overgang van bit4 (1-->0) 
+	BRA RL_SPR30
+
+    MOVLW b'01000000'                                   ;       JA: start timing proces T3
+    MOVWF ((LOW TBL_BINAIR) + (RELAISNR-1)),BANKED	
 	
+    BTFSS ((LOW TBL_CONST3)+ (RELAISNR-1)),2,BANKED     ;            Als FV3.bit2=0 dan geen T3
+    BRA RL_SPR40
+
+	MOVF ((LOW TBL_CONST2) + (RELAISNR-1)),W,BANKED     ;      laad waarde T3, Indien 0 dan einde T3
+	BZ RL_SPR40 
+
+	MOVWF ((LOW TBL_VAR2) + (RELAISNR-1)),BANKED        ;           laad waarde voor T3
+	MOVLW 60
+	MOVWF ((LOW TBL_VAR1) + (RELAISNR-1)),BANKED
+	BRA RL_END	
+
+RL_SPR30
+	BTFSS ((LOW TBL_BINAIR) + (RELAISNR-1)),6,BANKED    ;Is T3 bezig?
+    BRA RL_END
+
+	DECFSZ ((LOW TBL_VAR1) + (RELAISNR-1)),F,BANKED		;                     is T3 voorbij dan uitgang niet meer actief		
+	BRA RL_END
+	MOVLW 60 
+	MOVWF ((LOW TBL_VAR1) + (RELAISNR-1)),BANKED
+	DECFSZ ((LOW TBL_VAR2) + (RELAISNR-1)),F,BANKED
+	BRA RL_END    
+ 
+RL_SPR40
+    BCF ((LOW TBL_BINAIR) + (RELAISNR-1)),6,BANKED      ; Einde T3 en RESET uitgangen
+    BTFSC ((LOW TBL_CONST3)+ (RELAISNR-1)),0,BANKED
+    BRA $+6
+    BCF RELAISPOORT,RELAISPOORTBIT                  
+    BRA RL_END
+    BSF RELAISPOORT,RELAISPOORTBIT 
+
 
 RL_END
         NOP
@@ -143,7 +207,7 @@ RELAIS
         MACRO_RELAIS 26,POORT26
         MACRO_RELAIS 27,POORT27
         MACRO_RELAIS 28,POORT28
-    IF DEBUG == 0
+    IF DEBUGGER == 0
         MACRO_RELAIS 29,POORT29
         MACRO_RELAIS 30,POORT30
     ENDIF

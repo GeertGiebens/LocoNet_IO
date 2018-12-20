@@ -28,9 +28,7 @@
 ;EEADRH, EEADRL en EE_DATA moeten al op voorhand ingevuld worden
 
 COPY_NAAR_EEPROM
-        BCF EECON1,EEPGD
-        BCF EECON1,CFGS
-        BSF EECON1,WREN
+
         BCF INTCON,GIE
         MOVLW 55h
         MOVWF EECON2
@@ -38,11 +36,8 @@ COPY_NAAR_EEPROM
         MOVWF EECON2
         BSF EECON1,WR
         BSF INTCON,GIE
-        BTFSC EECON1,WR
-        BRA $-2
-        BCF EECON1,WREN
-        RETURN
 
+        RETURN
 
 ;***************************************************
 ;*******  Plaats data in te verzenden buffer   *****
@@ -63,8 +58,16 @@ TE_VERZENDEN_BYTES_IN_BUFFER
     MOVF VERSCHIL_TELLER,W              ;als er een kans bestaat dat er meer dan 255 BYTES nog in te verzenden buffer staan, dan data niet in buffer
     ADDWF AANTAL_BYTES,W
     BNC SPR001
+
+    IF STATUS_COUNTERS == 1
+       INCREMENT_Ring_Buffer_Full_COUNTER
+    ENDIF
     RETURN  
+
 SPR001
+    IF STATUS_COUNTERS ==1
+        INCREMENT_SENT_MESSAGE_COUNTER
+    ENDIF
     CLRF TE_VERZENDEN_EXORBYTE
     LFSR 0,TE_VERZENDEN_DATA
     LFSR 1,TE_VERZENDEN_BYTE1
@@ -104,6 +107,7 @@ LOOP_TVBIB
 
 TEST_NIEUWE_TE_VERZENDEN_DATA
 
+
         BTFSC LN_TRANSMITDATA          ; Heeft Loconet INCLUDE program de Vorige LocoNet data verzonden?
         RETURN
 
@@ -133,4 +137,5 @@ LOOP_TNTVD
         DECFSZ HULPTEL,F
         BRA LOOP_TNTVD
         BSF LN_TRANSMITDATA
+
         RETURN

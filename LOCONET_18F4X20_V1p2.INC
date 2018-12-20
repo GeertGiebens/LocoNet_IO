@@ -1,10 +1,11 @@
 
+
 ;***************************************************************************
 ;* Include file LocoNet Communicatie voor PIC 18F4620/18F4520              *
 ;*                                                                         *
 ;* Geschreven door Geert Giebens voor PIC 18F4620/18F4520 microcontrollers *
 ;*                                                                         *
-;* Datum: 12 feb 2018                                                      *
+;* Datum: 19 DEC 2018                                                      *
 ;*                                                                         *
 ;* Filenaam: LOCONET_18F4X20_V1p2.INC                                      *
 ;*     	                                                                   *
@@ -16,13 +17,18 @@
 ;*                                                                         * 
 ;***************************************************************************
 
+; (!1) --> Toegevoegd op 16/11/2018
+; (!1) Startmoment waarop data uit TX (transmitter) komt varieerd tussen 2탎 en 50탎
+; (!1) Door de BAUDRATE generator te resetten (overschrijven) en 60탎 te wachten, 
+; (!1) kan het startpunt transmitter tot op enkele 탎 bepaald worden.
+
 
 ;Geheugengebruik include file:
 ;
 ; RAM geheugen:
 ;  BANK0: 0x70  ... 0x7F  LocoNet variabelen (16 BYTES)
-;  BANK6: 0x680 ... 0x6FF  RECEIVE BUFFER (128 BYTES)
-;  BANK6: 0x600 ... 0x67F  TRANSMIT BUFFER (128 BYTES)
+;  BANK3: 0x300 ... 0x37F  TRANSMIT BUFFER (128 BYTES)
+;  BANK3: 0x380 ... 0x3FF  RECEIVE BUFFER (128 BYTES)
 
     RADIX DEC
 
@@ -33,7 +39,8 @@
 		#define LN_NIEUWDATA		LN_FLAG,0	; =1 als er nieuw data klaar staat in RECEIVE buffer
 		#define LN_NBYTES 		    LN_FLAG,1	; =1 Aantal in te lezen BYTES nog te bepalen uit tweede in te lezen BYTE
 		#define LN_ZENDEN 	    	LN_FLAG,4   ; =1 TRANSMITTER staat klaar om eerste byte te verzenden
-		#define LN_TIM1_FUNCTIE		LN_FLAG,5	; =0 CARRIER + MASTER + PRIORITY DETECT  =1 LINEBREAK DETECT 
+		#define LN_TIM1_FUNCTIE		LN_FLAG,5	; =0 CARRIER + MASTER + PRIORITY DETECT  =1 LINEBREAK DETECT
+        #define LN_TIM1_FUNCTIE2    LN_FLAG,2   ; =1 Extra 60탎 (zie !1)
 		#define LN_TRANSMITDATA 	LN_FLAG,6	; =1 er staat data in transmitbuffer
 		#define LN_CHECKSUM_ERR		LN_FLAG,7	; =1 dan is er een CHECKSUM error opgetreden bij data ontvangst 
 			
@@ -45,13 +52,13 @@
 		cblock 0x70					
 LN_RECEIVE_EXORBYTE			; op elke ingelezen byte wordt al een EXOR functie op uitgeoefend voor foutdetectie
 LN_RECEIVE_TELLER			; telt het aantal ingelezen BYTES
-LN_RECEIVE_TOTBYTES			; totaal in te lezen bytes bepaald uit opcode (BYTE 1 en eventueel BYTE 2)
 LN_RECEIVE_BYTE				; ontvangen byte
-
 LN_TRANSMIT_TELLER			; telt het aantal verzonden bytes
-LN_TRANSMIT_TOTBYTES	    ; totaal te verzenden bytes
 LN_TRANSMIT_BYTE			; verzonden byte
 LN_FLAG
+LN_TRANSMIT_TOTBYTES	    ; totaal te verzenden bytes
+LN_RECEIVE_TOTBYTES			; totaal in te lezen bytes bepaald uit opcode (BYTE 1 en eventueel BYTE 2)
+
 COPY_FSR1L
 COPY_FSR1H
 LN_COPY_WREG
@@ -59,15 +66,15 @@ LN_COPY_STATUS
 LN_COPY_BSR		
 		endc
 
-		cblock 0x680
+		cblock 0x300
+LN_TRANSMIT_BUFFER			; LocoNet Transmit buffer
+		endc
+		
+		cblock 0x380
 LN_RECEIVE_BUFFER			; LocoNet Receive buffer
 		endc
 
-		cblock 0x600
-LN_TRANSMIT_BUFFER			; LocoNet Transmit buffer
-		endc
-
-
+		
 ;********************************************************************
 ;******************* INTERRUPT SERVICE ROUTINE  *********************
 ;********************************************************************
@@ -77,14 +84,13 @@ Low_Priority_Interrupt
             MOVWF LN_COPY_WREG
             MOVFF STATUS,LN_COPY_STATUS
             MOVFF BSR, LN_COPY_BSR
-
 			BTFSS PIR1,TMR1IF            
 			BRA ISR_SPR50
 			BCF PIR1,TMR1IF
 
 ;TIMER1 INTERRUPT = LINEBREAK
 ;	    dan stop zenden (indien deze aan zenden was)
-;           en start CARRIER + MASTER + PRIORITY DELAY
+;           en start CARRIER + MASTER + PRIORITY DETECT
 
 			BTFSS LN_TIM1_FUNCTIE
 			BRA ISR_SPR20
@@ -93,16 +99,17 @@ Low_Priority_Interrupt
 
 SCMPD ;START_CARRIER_MASTER_PRIORITY_DELAY 
 
-			MOVF TMR3H,W    	;berekening: basistijd = 1200탎 + 360탎 + PRIORITY DELAY = RANDOM tussen (1탎 en 1024탎)
+			MOVF TMR3H,W    	;berekening: basistijd = CDMD=1596탎 + PRIORITY DELAY = RANDOM tussen (1탎 en 1024탎)
 			ANDLW b'00000011'	; RANDOM Generator afkomstig van 10 laagste bits TMR3
-			ADDLW 7
+			ADDLW 6 ; 5 waarde daarvoor
 			COMF WREG,W
 			MOVWF TMR1H
 			MOVF TMR3L,W
             MOVWF TMR1L
 			BCF LN_TIM1_FUNCTIE
+            BCF LN_TIM1_FUNCTIE2 ;(zie !1)
 			BRA LN_END
-      
+     
 
 ;TIMER1 INTERRUPT = CARRIER + MASTER + PRIORITY DETECT
 ;	  Staat er data in TRANSMIT BUFFER?
@@ -112,9 +119,8 @@ SCMPD ;START_CARRIER_MASTER_PRIORITY_DELAY
 
 ISR_SPR20
 			BTFSS LN_TRANSMITDATA
-			BRA SCMPD	;START_CARRIER_MASTER_PRIORITY_DELAY 
-
-ISR_SPR32
+			BRA SCMPD
+       
 			MOVFF FSR1L,COPY_FSR1L
 			MOVFF FSR1H,COPY_FSR1H
 			LFSR 1, LN_TRANSMIT_BUFFER
@@ -122,16 +128,45 @@ ISR_SPR32
 			MOVF INDF1,W
 			MOVWF LN_TRANSMIT_BYTE
 			BTFSS BAUDCON,RCIDL		;11/12/2015 toegevoegd om na te gaan of receiver data aan het lezen is.
-			BRA ISR_SPR33				
+			BRA ISR_SPR33
+            BTFSS PORTC,7               ;(zie !1)
+            BRA ISR_SPR33               ;(zie !1)
+
+            BTFSC LN_TIM1_FUNCTIE2      ;(zie !1)
+            BRA ISR_SPR21               ;(zie !1)
+            CLRF SPBRGH                 ;(zie !1)
+        	MOVLW 0x77                  ;(zie !1)
+        	MOVWF SPBRG                 ;(zie !1)
+            MOVLW .202                  ;(zie !1)
+            MOVWF TMR1L                 ;(zie !1)
+            SETF TMR1H                  ;(zie !1)
+            BSF LN_TIM1_FUNCTIE2        ;(zie !1)
+			MOVFF COPY_FSR1L,FSR1L      ;(zie !1)	
+			MOVFF COPY_FSR1H,FSR1H      ;(zie !1)	
+			BRA LN_END                  ;(zie !1)
+
+ISR_SPR21                               ;(zie !1) 			
+
+
 
 			MOVF INDF1,W
 			MOVWF TXREG
+        
 			BSF LN_ZENDEN
 			CLRF LN_TRANSMIT_TELLER
-ISR_SPR33
+            IF STATUS_COUNTERS == 1
+                INCREMENT_SENT_BYTE_COUNTER
+            ENDIF
 			MOVFF COPY_FSR1L,FSR1L	
 			MOVFF COPY_FSR1H,FSR1H		
-			BRA LN_END	
+            BRA LN_END	
+ISR_SPR33
+            IF STATUS_COUNTERS ==1
+                INCREMENT_UNSUCCESSFUL_ACCESS_ATTEMPTS_COUNTER
+            ENDIF
+			MOVFF COPY_FSR1L,FSR1L	
+			MOVFF COPY_FSR1H,FSR1H		
+			BRA SCMPD
 
 ;********************************************************************
 	
@@ -139,28 +174,33 @@ ISR_SPR33
 
 ;Is er een FRAMING ERROR? (kan ook afkomstig zijn van een externe LINEBREAK)
 ;	JA:	zet totaal in te lezen bytes op max 
-;		stop transmit Bytes (indien aan het verzenden)
-;       stop receiver
-;       Output RC6 --> '1'
-;       start Linebreak delay
+;		stop verzenden Bytes (indien aan het verzenden)
+;               start Linebreak delay
 
 ISR_SPR50
 			BTFSS RCSTA,FERR
 			BRA ISR_SPR52
+            IF STATUS_COUNTERS ==1
+                INCREMENT_FRAMING_ERROR_COUNTER
+            ENDIF
+            NOP
 LINEBREAK
-			MOVF RCREG,W			;maak ontvangstbuffer leeg			
+			MOVF RCREG,W			;maak ontvangstbuffer leeg	
+			MOVF RCREG,W		
 			SETF LN_RECEIVE_TOTBYTES			   		
 			BCF RCSTA,SPEN			;stop ontvanger
 			BSF PORTC,6
 			BCF LN_ZENDEN	
-			BCF LN_NIEUWDATA     ;<--???
+			BCF LN_NIEUWDATA
 
-			MOVLW 252			;Timer1 --> 900탎 = LINEBREAK     
+			MOVLW 252			;laad timer1 met 900탎 = LINEBREAK     
 			MOVWF TMR1H
 			MOVLW 123
 			MOVWF TMR1L
 			BSF LN_TIM1_FUNCTIE
-
+            IF STATUS_COUNTERS == 1
+                INCREMENT_LINEBREAK_COUNTER
+            ENDIF
 			BRA LN_END
 
 
@@ -185,6 +225,10 @@ ISR_SPR52
 			MOVF RCREG,W,A
 			MOVWF LN_RECEIVE_BYTE
 
+            IF STATUS_COUNTERS == 1
+                INCREMENT_READ_BYTE_COUNTER
+            ENDIF
+
 			BTFSC LN_RECEIVE_BYTE,7			
 			CLRF LN_RECEIVE_TELLER
 			
@@ -196,7 +240,8 @@ ISR_SPR52
 			ADDWF LN_RECEIVE_TELLER,W
 			MOVWF FSR1L,A
 			MOVF LN_RECEIVE_BYTE,W
-			MOVWF INDF1,A	
+			MOVWF INDF1,A
+            	
 			MOVFF COPY_FSR1L,FSR1L	
 			MOVFF COPY_FSR1H,FSR1H			
 
@@ -235,8 +280,6 @@ ISR_SPR70
 
 			INCF LN_RECEIVE_TELLER,F
 			MOVF LN_RECEIVE_TELLER,W	
-;			XORWF LN_RECEIVE_TOTBYTES,W          ; mag weg is vervangen door CPFSEQ?
-;			BTFSS STATUS,Z
             CPFSEQ LN_RECEIVE_TOTBYTES
 			BRA ISR_SPR90
 			MOVLW 1
@@ -245,10 +288,18 @@ ISR_SPR70
 			BTFSS STATUS,Z
             BRA ISR_SPR71
 			BSF LN_NIEUWDATA
+
+	    	MOVF RCREG,W
+            IF STATUS_COUNTERS ==1
+                INCREMENT_READ_MESSAGE_COUNTER
+            ENDIF
 			BRA ISR_SPR90
 
 ISR_SPR71
 			BSF LN_CHECKSUM_ERR
+            IF STATUS_COUNTERS ==1
+                INCREMENT_CHECKSUM_ERROR_COUNTER
+            ENDIF
             BRA LN_END
 
 ;********************************************************************
@@ -283,23 +334,30 @@ ISR_SPR90
 			MOVWF LN_TRANSMIT_BYTE
 
 			MOVF LN_TRANSMIT_TELLER,W
-;			XORWF LN_TRANSMIT_TOTBYTES,W,A       ; mag weg is vervangen door CPFSEQ?
-;			BTFSS STATUS,Z,A
             CPFSEQ LN_TRANSMIT_TOTBYTES
 			BRA ISR_SPR95
 			BCF LN_TRANSMITDATA
 			BCF LN_ZENDEN
-			BRA ISR_SPR97
+			MOVFF COPY_FSR1L,FSR1L	
+			MOVFF COPY_FSR1H,FSR1H
+            BRA SCMPD 
+
+
 ISR_SPR95
 			MOVF INDF1,W
 			MOVWF TXREG
 			BSF LN_ZENDEN
+            IF STATUS_COUNTERS == 1
+                INCREMENT_SENT_BYTE_COUNTER
+            ENDIF
+
 ISR_SPR97
 			MOVFF COPY_FSR1L,FSR1L	
 			MOVFF COPY_FSR1H,FSR1H			
-			BRA LN_END
+
 
 LN_END 
+
         MOVFF LN_COPY_BSR,BSR
         MOVF LN_COPY_WREG,W
         MOVFF LN_COPY_STATUS,STATUS
@@ -323,15 +381,19 @@ INIT_LOCONET
 		BCF LN_TRANSMITDATA
 				
 
-		BSF TRISC,6		;PORTC 6 = LN_TRANSMITTER OUT
+		BCF TRISC,6		;PORTC 6 = LN_TRANSMITTER OUT
 		BSF TRISC,7		;PORTC 7 = LN_RECEIVER IN
-;		BCF PORTC,6
 
 
 		;****************************************************
 		;*******  INIT LOCONET COMMUNICATIE *****************
 		;****************************************************
 
+        MOVLW b'00000001'       ;Comparator1 init
+        MOVWF CMCON
+        BCF TRISA,4
+
+.
 						; set transmitter en Receiver Baud Rate op 16,66 kHz
 		BSF BAUDCON,BRG16
 		BSF BAUDCON,TXCKP		; inverteer data out????
@@ -359,7 +421,6 @@ INIT_LOCONET
 
 		MOVLW b'00110001'		; start timer 1 op 1MHz klokfrequentie
 		MOVWF T1CON    
-;		BCF PIR1,RCIF
 		BSF PIE1,RCIE                   ; interrupt bij elk ingelezen byte
         BSF PIE1,TMR1IE
 
@@ -369,8 +430,3 @@ INIT_LOCONET
         BSF INTCON,GIEL            ;enable low priody interrupts
 
 		RETURN
-
-
-;********************************************************************
-
-

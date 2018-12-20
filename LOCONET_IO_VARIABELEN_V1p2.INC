@@ -1,27 +1,16 @@
 
+
 ;***************************************************************************
-;* LocoNet In/out module met PIC 18F4X20 microcontroller                   *
+;* LocoNet In/out module met PIC 18F4620 microcontroller                   *
 ;*                                                                         *
-;*  30 in-uitgangen met keuze uit:                                         *
-;*  - Servo uitgangen                                                      *
-;*  - logische uitgangen (5V Relais modules)                               *
-;*  - logische uitgangen puls (5V Relais modules voor wisselspoel)         *
-;*  - LED uitgangen (Fade in Fade out)                                     *
-;*  - bezetmelders (massa)                                                 *
-;*  - schakelaar; drukknop; enz... (met debouncing)                        *
-;*  - mogelijke toekomstige uitbreidingen                                  *
-;*  - mogelijkheid om toetsenbord en LCD display aan te sluiten            *
-;*                                                                         *
-;* Geschreven door Geert Giebens voor PIC 18F4620 microcontroller          *
-;*                                                                         *
-;* Datum: 12 feb 2018                      Versie LOCONET IO V1.2          *
+;* Datum: 29 Nov 2018                      Versie LOCONET IO V1.2          *
 ;*                                                                         *
 ;* Filenaam: LOCONET_IO_VARIABELEN_V1p2.INC                                *
 ;*                                                                         *
 ;***************************************************************************
-;********************************************************************
+
+
 ;************  POORTEN   ********************************************
-;********************************************************************
 
 	#DEFINE POORT1 PORTA,RA1
 	#DEFINE POORT2 PORTA,RA2
@@ -56,24 +45,47 @@
 	#DEFINE POORT28 PORTB,RB5
 	#DEFINE POORT29 PORTB,RB6
 	#DEFINE POORT30 PORTB,RB7
+
+    #DEFINE PROGRAM_NEW_DEVICE_ADRES PORTE,3
+
+
+;************  DEVICE FUNCTIES   ********************************************
 	
-	#DEFINE FUNCTIE_NOP 0x00
-    #DEFINE FUNCTIE_SWITCH 0x01
-    #DEFINE FUNCTIE_BUTTON 0x03
-    #DEFINE FUNCTIE_BUTTON_ON 0x05
-    #DEFINE FUNCTIE_BUTTON_OFF 0x07
-    #DEFINE FUNCTIE_RELAY 0x08
-    #DEFINE FUNCTIE_COIL1 0x10
-    #DEFINE FUNCTIE_COIL2 0x12
-    #DEFINE FUNCTIE_LED 0x40
-    #DEFINE FUNCTIE_LED_BLK 0x42
-    #DEFINE FUNCTIE_SERVO 0x80
-    #DEFINE FUNCTIE_ON_OFF 0x21
+	#DEFINE FUNCTIE_NOP         0x00
+    #DEFINE FUNCTIE_SWITCH      0x01
+    #DEFINE FUNCTIE_BUTTON      0x03
+    #DEFINE FUNCTIE_BUTTON_ON   0x05
+    #DEFINE FUNCTIE_BUTTON_OFF  0x07
+    #DEFINE FUNCTIE_RELAY       0x08
+    #DEFINE FUNCTIE_COIL1       0x10
+    #DEFINE FUNCTIE_COIL2       0x12
+    #DEFINE FUNCTIE_LED         0x40
+    #DEFINE FUNCTIE_LED_BLK     0x42
+    #DEFINE FUNCTIE_SERVO       0x80
+    #DEFINE FUNCTIE_ON_OFF      0x21
 
 
-;********************************************************************
+;************  LOCONET OPDRACHTEN   *********************************
+
+    #DEFINE OPC_SW_REQ      0xB0
+    #DEFINE OPC_PEER_XFER   0xE5
+    #DEFINE OPC_INPUT_REP   0xB2
+
+    #DEFINE CODE_UPLOAD     0x10    ;master wil gegevens opvragen van DEVICENR,POORTNUMMER,ADRESNR
+    #DEFINE CODE_UPDATE     0x11    ;master wil gegevens updaten van DEVICENR,POORTNUMMER,ADRESNR
+    #DEFINE CODE_DATA       0x12    ;DEVICE stuurt de gevraagde gegevens door
+    #DEFINE CODE_RESET      0x13    ;Reset Device
+    #DEFINE CODE_COUNTERS   0x14    ;Master vraagt DEVICE COUNTERS op
+    #DEFINE CODE_UPDATE_L   0x15    ;Master wil gegevens updaten Logische poorten
+    #DEFINE CODE_UPLOAD_L	0x16    ;Master wil logische gegevens poorten opvragen 
+    #DEFINE CODE_DATA_L     0x17    ;DEVICE stuurt de gevraagde gegevens Logische poort door
+    #DEFINE CODE_DATA_DC1   0x20    ;DEVICE COUNTERS:[LBCL,LBCH,SBCL,SBCH,SBCHH,RBCL,RBCH,RBCHH]
+    #DEFINE CODE_DATA_DC2   0x21    ;DEVICE COUNTERS:[FECL,FECH,CECL,CECH,DSCL,DSCH,UAACL,UAACH]
+    #DEFINE CODE_DATA_DC3   0x22    ;DEVICE COUNTERS:[SMCL,SMCH,RMCL,RMCH,OACL,OACH,RFCL,RFCH]
+    #DEFINE CODE_RESET_C    0x30    ;RESET Device Status Counters
+
+
 ;************ VARIABELEN ********************************************
-;********************************************************************
 
 ;RAM geheugen indeling:
 
@@ -88,15 +100,15 @@
 ; BANK2  160-191 TBL_VAR1
 ; BANK2  192-223 TBL_VAR2
 ; BANK2  224-255 TBL_INSTELLINGEN
-; BANK3  00-31   TBL_ADR1L	;LocoNet adres 1 Poort 1-32 Low byte
-; BANK3  32-63   TBL_ADR1H	;LocoNet adres 1 Poort 1-32 High byte
-; BANK3  64-95   TBL_ADR2L	;LocoNet adres 2 Poort 1-32 Low byte
-; BANK3  96-127  TBL_ADR2H	;LocoNet adres 2 Poort 1-32 High byte
+; BANK3  128-255 RECEIVE BUFFER LocoNet(128 BYTES)
+; BANK3  000-127 TRANSMIT BUFFER LocoNet(128 BYTES)
+; BANK4  00-31   TBL_ADR1L	;LocoNet adres 1 Poort 1-32 Low byte
+; BANK4  32-63   TBL_ADR1H	;LocoNet adres 1 Poort 1-32 High byte
+; BANK4  64-95   TBL_ADR2L	;LocoNet adres 2 Poort 1-32 Low byte
+; BANK4  96-127  TBL_ADR2H	;LocoNet adres 2 Poort 1-32 High byte
 ; BANK4  ...
-; BANK5  192-223 TBL_ADR12L	;LocoNet adres 12 Poort 1-32 Low byte
-; BANK5  224-255 TBL_ADR12H	;LocoNet adres 12 Poort 1-32 High byte 
-; BANK6: 128-255 RECEIVE BUFFER LocoNet(128 BYTES)
-; BANK6: 000-127 TRANSMIT BUFFER LocoNet(128 BYTES)
+; BANK6  192-223 TBL_ADR12L	;LocoNet adres 12 Poort 1-32 Low byte
+; BANK6  224-255 TBL_ADR12H	;LocoNet adres 12 Poort 1-32 High byte 
 
 
 	cblock 0x00	;algemene variabelen
@@ -109,6 +121,8 @@ SERVO_TEL	    	;houd bij hoeveel servo's in beweging zijn startwaarde =1 tot MAX
 HULPTEL		    	;teller algemeen gebruik
 KNIPPERTEL          ;houd bij of LED moet knipperen
 LED_FLAG            ;algemene flag voor gebruik bij LED
+TABEL_GOTO          ;gebruikt bij LED om GOTO te berekenen
+COPY_C              ;gebruikt bij LED om fade back juist teberekenen
 
 TE_VERZENDEN_BYTE1  ;gebruikt om data op te slaan in te verzenden data buffer
 TE_VERZENDEN_BYTE2
@@ -150,7 +164,7 @@ LN_BYTE_RECEIVE13
 LN_BYTE_RECEIVE14
 LN_BYTE_RECEIVE15
 
-BRON
+BRONCODE
 DEVICENR
 POORTNR
 ADRESNR
@@ -163,7 +177,9 @@ ADRESLOW
 ADRESHIGH
 
 POORT_TELLER		;houd bij welk poort en adres er verwerkt wordt
-POORT_FUNCTIE		;copy functie poort 
+POORT_FUNCTIE		;copy functie poort
+
+;cblock 0x70-0x7F -->  LocoNet variabele zie LOCONET_18F4X20_V1p2.INC
 
 	endc
 
@@ -176,7 +192,7 @@ TE_VERZENDEN_DATA       ;256 BYTES
     ENDC
 
 	CBLOCK 0x200
-TBL_FUNCTIE
+TBL_FUNCTIE   ;0x21F = Device Adres!
 	endc
 
 	CBLOCK 0x220
@@ -203,107 +219,110 @@ TBL_VAR1
 TBL_VAR2
 	endc
 
-	CBLOCK 0x2E0 ; TBL_INSTELLINGEN
-TBL_INSTELLINGEN
-    ;DEVICE_ADRES         ;op te vragen via *41     =Device adres
-
+	CBLOCK 0x2E0
+TBL_Logische_Functies
 	endc  
 
+;	cblock 0x300
+;LN_TRANSMIT_BUFFER			; LocoNet Transmit buffer zie LOCONET_18F4X20_V1p2.INC
+;	endc
 
-	CBLOCK 0x300
+;	cblock 0x380
+;LN_RECEIVE_BUFFER			; LocoNet Receive buffer zie LOCONET_18F4X20_V1p2.INC
+;	endc
+
+	CBLOCK 0x400
 TBL_ADR1L
 	ENDC
 
-	CBLOCK 0x320
+	CBLOCK 0x420
 TBL_ADR1H
 	ENDC
 
-	CBLOCK 0x340
+	CBLOCK 0x440
 TBL_ADR2L
 	ENDC
 
-	CBLOCK 0x360
+	CBLOCK 0x460
 TBL_ADR2H
 	ENDC
 
-	CBLOCK 0x380
+	CBLOCK 0x480
 TBL_ADR3L
 	ENDC
 
-	CBLOCK 0x3A0
+	CBLOCK 0x4A0
 TBL_ADR3H
 	ENDC
 
-	CBLOCK 0x3C0
+	CBLOCK 0x4C0
 TBL_ADR4L
 	ENDC
 
-	CBLOCK 0x3E0
+	CBLOCK 0x4E0
 TBL_ADR4H
 	ENDC
 
-	CBLOCK 0x400
+	CBLOCK 0x500
 TBL_ADR5L
 	ENDC
 
-	CBLOCK 0x420
+	CBLOCK 0x520
 TBL_ADR5H
 	ENDC
 
-	CBLOCK 0x440
+	CBLOCK 0x540
 TBL_ADR6L
 	ENDC
 
-	CBLOCK 0x460
+	CBLOCK 0x560
 TBL_ADR6H
 	ENDC
 
-	CBLOCK 0x480
+	CBLOCK 0x580
 TBL_ADR7L
 	ENDC
 
-	CBLOCK 0x4A0
+	CBLOCK 0x5A0
 TBL_ADR7H
 	ENDC
 
-	CBLOCK 0x4C0
+	CBLOCK 0x5C0
 TBL_ADR8L
 	ENDC
 
-	CBLOCK 0x4E0
+	CBLOCK 0x5E0
 TBL_ADR8H
 	ENDC
 
-	CBLOCK 0x500
+	CBLOCK 0x600
 TBL_ADR9L
 	ENDC
 
-	CBLOCK 0x520
+	CBLOCK 0x620
 TBL_ADR9H
 	ENDC
 
-	CBLOCK 0x540
+	CBLOCK 0x640
 TBL_ADR10L
 	ENDC
 
-	CBLOCK 0x560
+	CBLOCK 0x660
 TBL_ADR10H
 	ENDC
 
-	CBLOCK 0x580
+	CBLOCK 0x680
 TBL_ADR11L
 	ENDC
 
-	CBLOCK 0x5A0
+	CBLOCK 0x6A0
 TBL_ADR11H
 	ENDC
 
-	CBLOCK 0x5C0
+	CBLOCK 0x6C0
 TBL_ADR12L
 	ENDC
 
-	CBLOCK 0x5E0
+	CBLOCK 0x6E0
 TBL_ADR12H
 	ENDC
-
-		

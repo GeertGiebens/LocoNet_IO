@@ -10,11 +10,10 @@
 ;*  - bezetmelders (massa)                                                 *
 ;*  - schakelaar; drukknop; enz... (met debouncing)                        *
 ;*  - mogelijke toekomstige uitbreidingen                                  *
-;*  - mogelijkheid om toetsenbord en LCD display aan te sluiten            *
 ;*                                                                         *
 ;* Geschreven door Geert Giebens voor PIC 18F4620 microcontroller          *
 ;*                                                                         *
-;* Datum: 6 JAN 2017                      Versie LOCONET IO V1.1           *
+;* Datum: 27 Mei 2018                     Versie LOCONET IO V1.2           *
 ;*                                                                         *
 ;* Filenaam: LOCONET_IO_SPOEL.INC                                          *
 ;*                                                                         *
@@ -34,14 +33,21 @@
 
 MACRO_SPOEL MACRO SPOELNR,SPOELPOORT,SPOELPOORTBIT
 
-        LOCAL MS_END, MS_SPR10,MS_SPR20,MS_SPR15
+        LOCAL MS_END, MS_SPR10,MS_SPR20,MS_SPR15, MS_SPR13, MS_SPR12, MS_SPR5, MS_SPR6
 
 		BTFSS ((LOW TBL_FUNCTIE) + (SPOELNR-1)),4,BANKED	;Is functie spoel?
 		BRA MS_END                                          ;   Nee: dan volgende poort
 
         BTFSS ((LOW TBL_BINAIR) + (SPOELNR-1)),0,BANKED     ;Is spoel actief dan uitgang =0 en stop timer0
         BRA MS_SPR10
-        BCF SPOELPOORT,SPOELPOORTBIT  
+
+        BTFSC ((LOW TBL_CONST3)+ (SPOELNR-1)),0,BANKED
+        BRA MS_SPR5
+        BCF SPOELPOORT,SPOELPOORTBIT                 
+        BRA MS_SPR6
+MS_SPR5
+        BSF SPOELPOORT,SPOELPOORTBIT
+MS_SPR6 
         BSF ((LOW TBL_BINAIR) + (SPOELNR-1)),1,BANKED
         BCF T0CON,TMR0ON  
         BCF INTCON,TMR0IF  
@@ -57,7 +63,14 @@ MS_SPR10
 
         BTFSC ((LOW TBL_BINAIR) + (SPOELNR-1)),1,BANKED     ;Staat de spoel al in de gevraagde stand, dan doe niets
         BRA MS_END
-        BSF SPOELPOORT,SPOELPOORTBIT                        ;   anders uitgang= 1  en start timer0 met tijd uit CONST1
+        BTFSC ((LOW TBL_CONST3)+ (SPOELNR-1)),0,BANKED
+        BRA MS_SPR12
+        BSF SPOELPOORT,SPOELPOORTBIT                 
+        BRA MS_SPR13
+MS_SPR12
+        BCF SPOELPOORT,SPOELPOORTBIT
+MS_SPR13 
+                    
         MOVF ((LOW TBL_CONST1) + (SPOELNR-1)),W,BANKED
         COMF WREG,W  
         MOVWF TMR0H  
@@ -104,7 +117,6 @@ SP_SPR10
         MACRO_SPOEL 14,POORT14
         MACRO_SPOEL 15,POORT15
         MACRO_SPOEL 16,POORT16
-        MACRO_SPOEL 17,POORT17
         MACRO_SPOEL 18,POORT18
         MACRO_SPOEL 19,POORT19
         MACRO_SPOEL 20,POORT20
@@ -116,7 +128,7 @@ SP_SPR10
         MACRO_SPOEL 26,POORT26
         MACRO_SPOEL 27,POORT27
         MACRO_SPOEL 28,POORT28
-    IF DEBUG == 0
+    IF DEBUGGER == 0
         MACRO_SPOEL 29,POORT29
         MACRO_SPOEL 30,POORT30
     ENDIF
