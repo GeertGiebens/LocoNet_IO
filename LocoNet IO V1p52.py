@@ -41,8 +41,8 @@ class MyLnListener (jmri.jmrix.loconet.LocoNetListener) :
               lLNAddress.setText(str(1+msg.getElement(13)+(msg.getElement(14)*128)))
 
               if   int(lFunction.text) == 0 :
-         		lFV1.setEnabled(True)
-         		lFV2.setEnabled(True)
+         		lFV1.setEnabled(False)
+         		lFV2.setEnabled(False)
          		lFV3.setEnabled(False)
          		lLNAddress.setEnabled(False)
 			selectBox.setEnabled(False)
@@ -363,8 +363,18 @@ def whenSendButtonClicked(event) :
 
      if   functieBox.getSelectedItem() == COIL1 : # IF select COIL1: Next port must be COIL2 with same LN address!
         lFunction.setText("18")
- 	ARG4 =  int(portBox.getSelectedItem())+1  
-  	ARG7 =  18
+        ARG4 =  int(portBox.getSelectedItem()) + 1  
+        ARG5 =  (int(lFunction.text)/128)*2 + (int(lFV1.text)/128)*4 + (int(lFV2.text)/128)*8
+        ARG6 =  int(adresBox.getSelectedItem())   
+        ARG7 =  int(lFunction.text)%128
+        ARG8 =  int(lFV1.text)%128
+        ARG9 =  int(lFV2.text)%128
+        ARG10 = int(lFV3.text)/128 + (int(lBinair.text)/128)*2
+        ARG11 = int(lFV3.text)%128
+        ARG12 = int(lBinair.text)%128
+        ARG13 = (int(lLNAddress.text)-1)%128 
+        ARG14 = (int(lLNAddress.text)-1)/128
+        ARG15 = 0
 	sendLoconetMsg(msgLength,opcode,ARG1,ARG2,ARG3,ARG4,ARG5,ARG6,ARG7,ARG8,ARG9,ARG10,ARG11,ARG12,ARG13,ARG14,ARG15)
 
      return
@@ -413,7 +423,7 @@ def whenfunctionBoxItemChange(event) :
          lFunction.setText("0")
 	 adresBox.setSelectedItem("1")
      elif functieBox.getSelectedItem() == SWITCH :
-         #lLNAddress.setText("1")     
+         lLNAddress.setText("1")     
          lFV1.setText("0")
          lFV2.setText("1")
          lFV3.setText("0")
@@ -429,7 +439,7 @@ def whenfunctionBoxItemChange(event) :
          lFunction.setText("1")
 	 adresBox.setSelectedItem("1")
      elif  functieBox.getSelectedItem() == BUTTON :
-         #lLNAddress.setText("1")    
+         lLNAddress.setText("1")    
          lFV1.setText("0")
          lFV2.setText("0")
          lFV3.setText("0")
@@ -445,7 +455,7 @@ def whenfunctionBoxItemChange(event) :
          lFunction.setText("3")
 	 adresBox.setSelectedItem("1")
      elif  functieBox.getSelectedItem() == BUTTON_ON :
-         #lLNAddress.setText("1")     
+         lLNAddress.setText("1")     
          lFV1.setText("0")
          lFV2.setText("0")
          lFV3.setText("0")
@@ -461,7 +471,7 @@ def whenfunctionBoxItemChange(event) :
          lFunction.setText("5")
 	 adresBox.setSelectedItem("1")
      elif  functieBox.getSelectedItem() == BUTTON_OFF :
-         #lLNAddress.setText("1")     
+         lLNAddress.setText("1")     
          lFV1.setText("0")
          lFV2.setText("0")
          lFV3.setText("0")
@@ -477,7 +487,7 @@ def whenfunctionBoxItemChange(event) :
          lFunction.setText("7")
 	 adresBox.setSelectedItem("1")
      elif  functieBox.getSelectedItem() == BUTTON_ON_OFF:
-         #lLNAddress.setText("1")    
+         lLNAddress.setText("1")    
          lFV1.setText("0")
          lFV2.setText("0")
          lFV3.setText("0")
@@ -492,7 +502,7 @@ def whenfunctionBoxItemChange(event) :
          lFV3.setToolTipText("When '0' then Normal Open contact NO; when '1' then Normal Closed contact NC")
          lFunction.setText("33")
      elif  functieBox.getSelectedItem() == LED :
-         #lLNAddress.setText("1")    
+         lLNAddress.setText("1")    
          lFV1.setText("0")
          lFV2.setText("255")
          lFV3.setText("1")
@@ -508,7 +518,7 @@ def whenfunctionBoxItemChange(event) :
          lFunction.setText("64")
 	 adresBox.setSelectedItem("1")
      elif  functieBox.getSelectedItem() == LED_BLINKING :
-         #lLNAddress.setText("1")    
+         lLNAddress.setText("1")    
          lFV1.setText("0")
          lFV2.setText("255")
          lFV3.setText("105")
@@ -524,7 +534,7 @@ def whenfunctionBoxItemChange(event) :
          lFunction.setText("66")
 	 adresBox.setSelectedItem("1")  
      elif  functieBox.getSelectedItem() == RELAY :
-         #lLNAddress.setText("1")    
+         lLNAddress.setText("1")    
          lFV1.setText("0")
          lFV2.setText("0")
          lFV3.setText("0")
@@ -540,7 +550,7 @@ def whenfunctionBoxItemChange(event) :
          lFunction.setText("8") 
 	 adresBox.setSelectedItem("1") 
      elif  functieBox.getSelectedItem() == COIL1 :
-         #lLNAddress.setText("1")    
+         lLNAddress.setText("1")    
          lFV1.setText("255")
          lFV2.setText("0")
          lFV3.setText("0")
@@ -556,7 +566,7 @@ def whenfunctionBoxItemChange(event) :
          lFunction.setText("16") 
 	 adresBox.setSelectedItem("1")
      elif  functieBox.getSelectedItem() == COIL2 :
-         #lLNAddress.setText("1")   
+         lLNAddress.setText("1")   
          lFV1.setText("255")
          lFV2.setText("0")
          lFV3.setText("0")
@@ -572,7 +582,7 @@ def whenfunctionBoxItemChange(event) :
          lFunction.setText("18") 
 	 adresBox.setSelectedItem("1")
      else : #functieBox.getSelectedItem() == SERVO 
-         #lLNAddress.setText("1")
+         lLNAddress.setText("1")
          lFV1.setText("100")     
          lFV2.setText("200")
          lFV3.setText("255")
@@ -592,9 +602,9 @@ def whenfunctionBoxItemChange(event) :
 def whenlLF_functieboxItemChanged(event) :
 
      if   lLF_functiebox.getSelectedItem() == NOP :  
-         lLF_AddressIn1.setText("0")
-         lLF_AddressIn2.setText("0")
-         lLF_AddressOut.setText("0")
+         lLF_AddressIn1.setText("1")
+         lLF_AddressIn2.setText("1")
+         lLF_AddressOut.setText("1")
          lLF_AddressIn1.setEnabled(False)
          lLF_AddressIn2.setEnabled(False)
          lLF_AddressOut.setEnabled(False)
