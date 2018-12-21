@@ -423,7 +423,7 @@ def whenfunctionBoxItemChange(event) :
          lFunction.setText("0")
 	 adresBox.setSelectedItem("1")
      elif functieBox.getSelectedItem() == SWITCH :
-         lLNAddress.setText("1")     
+         lLNAddress.setText("2048")     
          lFV1.setText("0")
          lFV2.setText("1")
          lFV3.setText("0")
@@ -829,6 +829,8 @@ lLF_portBox.addItemListener(whenLoad_LF_ButtonClicked)
 # create fields
 
 lDevice  = javax.swing.JTextField("1",3)
+lDevice.addActionListener(whenLoadButtonClicked)
+lDevice.addActionListener(whenLoad_LF_ButtonClicked)
 
 lFunction = javax.swing.JTextField("0",3)  
  
