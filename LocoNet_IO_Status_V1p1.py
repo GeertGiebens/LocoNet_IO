@@ -79,6 +79,22 @@ def whenResetButtonClicked_S(event) :
 	 
 def whenLoadButtonClicked_S(event) :
 
+     lLBC.setText("-----")
+     lSBC.setText("-----")
+     lRBC.setText("-----")
+     lRMC.setText("-----")
+     lSMC.setText("-----")
+     lFEC.setText("-----")
+     lCEC.setText("-----")
+     lDSC.setText("-----")
+     lUAAC.setText("-----")
+     lOAC.setText("-----")
+     lRFC.setText("-----")
+     lSMs.setText("-----")
+     lRMs.setText("-----")
+     lRMLB.setText("-----")
+
+
      msgLength = 16
      opcode = OPC_PEER_XFER
      ARG1 =  msgLength

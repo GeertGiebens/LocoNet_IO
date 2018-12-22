@@ -3,6 +3,21 @@ import javax.swing
 typePacket = 0
 #Date: 10/oktober/2018    Version:1.52   File: LocoNet IO V1p52.py
 
+OPC_PEER_XFER = 0xE5
+
+CODE_UPLOAD    = 0x10    #MASTER asks Port-Data from Device
+CODE_UPDATE    = 0x11    #MASTER update new Port Data in Device
+CODE_DATA      = 0x12    #Device transmit requested data to MASTER
+CODE_RESET     = 0x13    #RESET Device
+CODE_COUNTERS  = 0x14    #MASTER asks for the status counters from Device
+CODE_UPDATE_L  = 0x15    #MASTER update new Logical-Port Data in Device
+CODE_UPLOAD_L  = 0x16    #MASTER asks Logical-Port-Data from Device
+CODE_DATA_L    = 0x17    #Device transmit requested Logical-Port-Data to MASTER
+CODE_DATA_DC1  = 0x20    #DEVICE transmit requested status COUNTERS to MASTER:[LBCL,LBCH,SBCL,SBCH,SBCHH,RBCL,RBCH,RBCHH]
+CODE_DATA_DC2  = 0x21    #DEVICE transmit requested status COUNTERS to MASTER:[FECL,FECH,CECL,CECH,DSCL,DSCH,UAACL,UAACH]
+CODE_DATA_DC3  = 0x22    #DEVICE transmit requested status COUNTERS to MASTER:[SMCL,SMCH,RMCL,RMCH,OACL,OACH,RFCL,RFCH]
+CODE_RESET_C   = 0x30    #RESET DEVICE Counters
+
 NOP           ="NOP = NO Operation"
 SWITCH        ="SWITCH DIR=1 or 0 closed/open (+ S88 bus)"
 BUTTON        ="BUTTON DIR= alternate between 1 and 0"
@@ -24,13 +39,11 @@ EXOR          ="EXOR: Out = In1 EXOR In2"
 NEXOR         ="NEXOR:  Out = In1 EXOR In2 Inverted"
 FlipFlop      ="Flip-Flop"
 
-OPCODE = 0xE5
-
 class MyLnListener (jmri.jmrix.loconet.LocoNetListener) :
 
     def message(self,msg) :
 
-         if ((msg.getElement(0)==OPCODE) and (msg.getElement(2)==0x12)) : 
+         if ((msg.getElement(0)==OPC_PEER_XFER) and (msg.getElement(2)==CODE_DATA)) : 
               lFunction.setText(str(msg.getElement(7)+((msg.getElement(5) & 2)*64)))
               lFV1.setText(str(msg.getElement(8)+((msg.getElement(5) & 4)*32)))
               lFV2.setText(str(msg.getElement(9)+((msg.getElement(5) & 8)*16)))
@@ -182,7 +195,7 @@ class MyLnListener (jmri.jmrix.loconet.LocoNetListener) :
          		functieBox.setSelectedItem(SERVO)
 
               return
-         elif ((msg.getElement(0)==OPCODE) and (msg.getElement(2)==0x17)) : 
+         elif ((msg.getElement(0)==OPC_PEER_XFER) and (msg.getElement(2)==CODE_DATA_L )) : 
 	      lLF_Binair.setText(str(msg.getElement(6)))
               lLF_Function.setText(str(msg.getElement(7)))
               lLF_AddressIn1.setText(str(1+msg.getElement(8)+(msg.getElement(9)*128)))
@@ -263,9 +276,9 @@ my_LnTrafContInstance.addLocoNetListener(0xFF,MyLnListener())
 def whenLoadButtonClicked(event) :
 
      msgLength = 16
-     opcode = OPCODE 
+     opcode = OPC_PEER_XFER
      ARG1 =  msgLength
-     ARG2 =  0x10  #BRON
+     ARG2 =  CODE_UPLOAD 
      ARG3 =  int(lDevice.text)  
      ARG4 =  int(portBox.getSelectedItem())  
      ARG5 =  (int(lFunction.text)/128)*2 + (int(lFV1.text)/128)*4 + (int(lFV2.text)/128)*8
@@ -287,9 +300,9 @@ def whenLoadButtonClicked(event) :
 def whenLoad_LF_ButtonClicked(event) :
 
      msgLength = 16
-     opcode = OPCODE 
+     opcode = OPC_PEER_XFER 
      ARG1 =  msgLength
-     ARG2 =  0x16  #BRON
+     ARG2 =  CODE_UPLOAD_L
      ARG3 =  int(lDevice.text)  
      ARG4 =  int(lLF_portBox.getSelectedItem())  
      ARG5 =  0
@@ -311,9 +324,9 @@ def whenLoad_LF_ButtonClicked(event) :
 def whenResetButtonClicked(event) :
 
      msgLength = 16
-     opcode = OPCODE 
+     opcode = OPC_PEER_XFER 
      ARG1 =  msgLength
-     ARG2 =  0x13  #BRON = RESET DEVICE
+     ARG2 =  CODE_RESET  #BRON = RESET DEVICE
      ARG3 =  int(lDevice.text)  
      ARG4 =  0x40 
      ARG5 =  0x00
@@ -336,9 +349,9 @@ def whenResetButtonClicked(event) :
 def whenSendButtonClicked(event) :
 
      msgLength = 16
-     opcode =OPCODE  
+     opcode = OPC_PEER_XFER 
      ARG1 =  msgLength
-     ARG2 =  0x11  #BRON
+     ARG2 =  CODE_UPDATE
      ARG3 =  int(lDevice.text)  
      ARG4 =  int(portBox.getSelectedItem())  
      ARG5 =  (int(lFunction.text)/128)*2 + (int(lFV1.text)/128)*4 + (int(lFV2.text)/128)*8
@@ -383,9 +396,9 @@ def whenSendButtonClicked(event) :
 def whenSend_LF_ButtonClicked(event) :
 
      msgLength = 16
-     opcode =OPCODE  
+     opcode =OPC_PEER_XFER 
      ARG1 =  msgLength
-     ARG2 =  0x15  #BRON
+     ARG2 =  CODE_UPDATE_L
      ARG3 =  int(lDevice.text)  
      ARG4 =  int(lLF_portBox.getSelectedItem())  
      ARG5 =  0
