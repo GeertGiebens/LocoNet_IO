@@ -42,7 +42,11 @@ class MyLnListener_S (jmri.jmrix.loconet.LocoNetListener) :
 	
               lSMs.setText(str(round((float(lSMC.text)/float(lDSC.text)),3)))
               lRMs.setText(str(round((float(lRMC.text)/float(lDSC.text)),3)))
-              lRMLB.setText(str(round((float(lRMC.text)/float(lLBC.text)),2)))
+
+	      if int(lLBC.text) == 0 :
+	           lRMLB.setText("-----")
+              else:
+                   lRMLB.setText(str(round((float(lRMC.text)/float(lLBC.text)),2)))
   
          return
 
@@ -120,11 +124,6 @@ def sendLoconetMsg_S(msgLength,opcode,ARG1,ARG2,ARG3,ARG4,ARG5,ARG6,ARG7,ARG8,AR
      jmri.jmrix.loconet.LnTrafficController.instance().sendLocoNetMessage(packet)
      return
 
-
-loadButton_S = javax.swing.JButton("LOAD")
-loadButton_S.actionPerformed = whenLoadButtonClicked_S
-loadButton_S.setToolTipText("Load Port data from Device")
-
 resetButton_S = javax.swing.JButton("RESET ALL DEVICE STATUS COUNTERS")
 resetButton_S.actionPerformed = whenResetButtonClicked_S
 resetButton_S.setToolTipText("Reset device Status Counters")
@@ -135,6 +134,7 @@ resetButton_S.setForeground(java.awt.Color.BLUE)
 
 lDevice_S  = javax.swing.JTextField("1",3)
 lDevice_S.setToolTipText("Device number, select from 1 to 127")
+lDevice_S.addActionListener(whenLoadButtonClicked_S)
 
 lLBC = javax.swing.JTextField("0",5)	#LineBreak Counter
 
@@ -179,7 +179,6 @@ panelDeviceNr_S.add(lDevice_S)
 
 panelDevice_S = javax.swing.JPanel()
 panelDevice_S.add(panelDeviceNr_S)
-panelDevice_S.add(loadButton_S)
 panelDevice_S.add(resetButton_S)
 
 panelLBC=javax.swing.JPanel()
