@@ -83,6 +83,7 @@
     #DEFINE CODE_DATA_DC2   0x21    ;DEVICE COUNTERS:[FECL,FECH,CECL,CECH,DSCL,DSCH,UAACL,UAACH]
     #DEFINE CODE_DATA_DC3   0x22    ;DEVICE COUNTERS:[SMCL,SMCH,RMCL,RMCH,OACL,OACH,RFCL,RFCH]
     #DEFINE CODE_RESET_C    0x30    ;RESET Device Status Counters
+    #DEFINE CODE_CLEAR      0x31    ;CLEAR Device (No Functions for all Ports)
 
 
 ;************ VARIABELEN ********************************************

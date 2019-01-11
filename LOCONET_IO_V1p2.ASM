@@ -4,7 +4,7 @@
 ;*                                                                         *
 ;* Geschreven door Geert Giebens voor PIC 18F4620 microcontroller          *
 ;*                                                                         *
-;* Datum: 29 Nov 2018                       Versie LOCONET IO V1.2         *
+;* Datum: 10 Jan 2019                       Versie LOCONET IO V1.2         *
 ;*                                                                         *
 ;* Filenaam: LOCONET_IO_V1p2.ASM                                           *
 ;*     	                                                                   *
@@ -32,6 +32,7 @@
 ;*  -18/07/18: 4 Logische poorten toegevoegd. ( op poort 31-34)  	       *
 ;*  -04/10/18: Functie INGANG ook met +5V actief     	                   *
 ;*  -30/10/18: Functie DIGITAAL ook met vertraagd uitschakelen    	       *
+;*  -10/10/19: CLEAR EEPROM toegevoegd                                     *
 ;*     	                                                                   *
 ;*                         _____________________                           *
 ;*        (Vpp)   PNDA    | 1  RE3 *  *  RB7 40 |      poort 30 (PGD)      *

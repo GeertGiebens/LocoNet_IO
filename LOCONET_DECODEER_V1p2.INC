@@ -4,7 +4,7 @@
 ;*                                                                         *
 ;* Geschreven door Geert Giebens voor PIC 18F4620 microcontroller          *
 ;*                                                                         *
-;* Datum: 29 Nov 2018                      Versie LOCONET IO V1.2          *
+;* Datum: 10 jan 2019                      Versie LOCONET IO V1.2          *
 ;*                                                                         *
 ;* Filenaam: LOCONET_DECODEER_V1p2.INC                                     *
 ;*                                                                         *
@@ -1292,7 +1292,7 @@ DLN_SPR80
 
         MOVLW CODE_RESET            ;RESET device
         CPFSEQ BRONCODE
-        GOTO DLN_SPR95
+        GOTO DLN_SPR85
 
 
         MOVF ADRESNR,W               ;voor de zekerheid moet data overeenkomen met verzonden data
@@ -1327,6 +1327,102 @@ DLN_SPR80
         XORLW 0x20
         BTFSS STATUS,Z
         RETURN
+
+        RESET
+
+
+DLN_SPR85
+
+        MOVLW CODE_CLEAR            ;CLEAR device
+        CPFSEQ BRONCODE
+        GOTO DLN_SPR95
+
+
+        MOVF ADRESNR,W               ;voor de zekerheid moet data overeenkomen met verzonden data
+        XORLW 0x43     ;C
+        BTFSS STATUS,Z
+        RETURN
+        MOVF FUNCTIE ,W
+        XORLW 0x4C     ;L
+        BTFSS STATUS,Z
+        RETURN
+        MOVF CONST1,W
+        XORLW 0x45     ;E
+        BTFSS STATUS,Z
+        RETURN
+        MOVF CONST2,W
+        XORLW 0x41     ;A
+        BTFSS STATUS,Z
+        RETURN
+        MOVF CONST3,W
+        XORLW 0x52     ;R
+        BTFSS STATUS,Z
+        RETURN
+        MOVF BINAIR,W
+        XORLW 0x20
+        BTFSS STATUS,Z
+        RETURN
+        MOVF ADRESLOW,W
+        XORLW 0x20
+        BTFSS STATUS,Z
+        RETURN
+        MOVF ADRESHIGH,W
+        XORLW 0x20
+        BTFSS STATUS,Z
+        RETURN
+
+        CLRF EEADRH 
+        CLRF EEADR  
+        CLRF EEDATA  
+        CLRF HULPTEL  
+
+DLN_SPR86
+        CALL COPY_NAAR_EEPROM
+        BTFSC EECON1,WR             
+        BRA $-2
+        INCF EEADR,F  
+        DECFSZ HULPTEL,F  
+        BRA DLN_SPR86	
+        INCF EEADRH,F 
+
+DLN_SPR87
+        CALL COPY_NAAR_EEPROM
+        BTFSC EECON1,WR             
+        BRA $-2
+        INCF EEADR,F  
+        DECFSZ HULPTEL,F  
+        BRA DLN_SPR87
+        INCF EEADRH,F 
+
+DLN_SPR88
+        CALL COPY_NAAR_EEPROM
+        BTFSC EECON1,WR             
+        BRA $-2
+        INCF EEADR,F  
+        DECFSZ HULPTEL,F  
+        BRA DLN_SPR88
+        INCF EEADRH,F 
+
+DLN_SPR89
+        CALL COPY_NAAR_EEPROM
+        BTFSC EECON1,WR             
+        BRA $-2
+        INCF EEADR,F  
+        DECFSZ HULPTEL,F  
+        BRA DLN_SPR89	
+
+
+
+        BTFSC EECON1,WR              ;   Devicenr terug opslaan in EEPROM
+        BRA $-2
+        MOVF DEVICENR,w
+        MOVWF EEDATA
+        CLRF EEADRH
+        MOVLW 0x1F
+        MOVWF EEADR
+        CALL COPY_NAAR_EEPROM
+        BTFSC EECON1,WR             
+        BRA $-2
 
         RESET
 
