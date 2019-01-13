@@ -1,6 +1,14 @@
+import jmri
+
 import java
+import java.awt
+import java.awt.event
 import javax.swing
+
 typePacket = 0
+# set the intended LocoNet connection by its index; when you have just 1 connection index = 0
+connectionIndex = 0
+
 #Date: 4/januari/2019    Version:1.55   File: LocoNet IO V1p55.py
 
 OPC_PEER_XFER = 0xE5
@@ -40,6 +48,8 @@ EXOR          ="EXOR: Out = In1 EXOR In2"
 NEXOR         ="NEXOR:  Out = (In1 EXOR In2) Inverted"
 FlipFlop      ="Flip-Flop"
 
+myLocoNetConnection = jmri.InstanceManager.getList(jmri.jmrix.loconet.LocoNetSystemConnectionMemo).get(0);
+
 class MyLnListener (jmri.jmrix.loconet.LocoNetListener) :
 
     def message(self,msg) :
@@ -54,8 +64,6 @@ class MyLnListener (jmri.jmrix.loconet.LocoNetListener) :
               lBinair.setText(str(msg.getElement(12)+((msg.getElement(10) & 2)*64)))
               lLNAddress.setText(str(1+msg.getElement(13)+(msg.getElement(14)*128)))
 
-              functieBox.setEnabled(True)
-	      lPort.setEnabled(True)
 
               if   int(lFunction.text) == 0 :
          		lFV1.setEnabled(False)
@@ -198,6 +206,9 @@ class MyLnListener (jmri.jmrix.loconet.LocoNetListener) :
          		lFV3.setToolTipText("Transistion period:  range 1-255, 1=very slow; 255=fast")
          		functieBox.setSelectedItem(SERVO)
 
+              functieBox.setEnabled(True)
+	      lPort.setEnabled(True)
+
               return
 
          elif ((msg.getElement(0)==OPC_PEER_XFER) and (msg.getElement(2)==CODE_DATA_L )) : 
@@ -207,8 +218,6 @@ class MyLnListener (jmri.jmrix.loconet.LocoNetListener) :
               lLF_AddressIn2.setText(str(1+msg.getElement(11)+(msg.getElement(12)*128)))
               lLF_AddressOut.setText(str(1+msg.getElement(13)+(msg.getElement(14)*128)))
 
-              lLF_functiebox.setEnabled(True)
-              lLF_port.setEnabled(True)
 
               if   int(lLF_Function.text) == 0 :
          		lLF_AddressIn1.setEnabled(False)
@@ -274,11 +283,14 @@ class MyLnListener (jmri.jmrix.loconet.LocoNetListener) :
                         lLF_AddressIn2.setToolTipText("Switch Address RESET Flip-Flop, select from 1 to 2048")
                         lLF_AddressOut.setToolTipText("Flip-Flop Output Switch Address, select from 1 to 2048")
          		lLF_functiebox.setSelectedItem(FlipFlop)
+
+              lLF_functiebox.setEnabled(True)
+              lLF_port.setEnabled(True)
+
 	      return
          return
 
-my_LnTrafContInstance = jmri.jmrix.loconet.LnTrafficController.instance()
-my_LnTrafContInstance.addLocoNetListener(0xFF,MyLnListener())
+myLocoNetConnection.getLnTrafficController().addLocoNetListener(0xFF,MyLnListener())
 
 
 
@@ -764,7 +776,8 @@ def sendLoconetMsg(msgLength,opcode,ARG1,ARG2,ARG3,ARG4,ARG5,ARG6,ARG7,ARG8,ARG9
      packet.setElement(13, ARG13)
      packet.setElement(14, ARG14)
      packet.setElement(15, ARG15)   
-     jmri.jmrix.loconet.LnTrafficController.instance().sendLocoNetMessage(packet)
+     jmri.InstanceManager.getList(jmri.jmrix.loconet.LocoNetSystemConnectionMemo).get(connectionIndex).getLnTrafficController().sendLocoNetMessage(packet)
+
      return
 
 

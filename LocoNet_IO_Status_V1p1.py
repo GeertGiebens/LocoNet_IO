@@ -1,7 +1,13 @@
+import jmri
+
 import java
-import javax.swing
 import java.awt
+import java.awt.event
+import javax.swing
+
 typePacket = 0
+# set the intended LocoNet connection by its index; when you have just 1 connection index = 0
+connectionIndex = 0
 
 OPC_PEER_XFER = 0xE5
 
@@ -17,6 +23,9 @@ CODE_DATA_DC1  = 0x20    #DEVICE transmit requested status COUNTERS to MASTER:[L
 CODE_DATA_DC2  = 0x21    #DEVICE transmit requested status COUNTERS to MASTER:[FECL,FECH,CECL,CECH,DSCL,DSCH,UAACL,UAACH]
 CODE_DATA_DC3  = 0x22    #DEVICE transmit requested status COUNTERS to MASTER:[SMCL,SMCH,RMCL,RMCH,OACL,OACH,RFCL,RFCH]
 CODE_RESET_C   = 0x30    #RESET DEVICE Counters
+
+
+myLocoNetConnection_S = jmri.InstanceManager.getList(jmri.jmrix.loconet.LocoNetSystemConnectionMemo).get(0);
 
 class MyLnListener_S (jmri.jmrix.loconet.LocoNetListener) :
 
@@ -50,8 +59,8 @@ class MyLnListener_S (jmri.jmrix.loconet.LocoNetListener) :
   
          return
 
-my_LnTrafContInstance_S = jmri.jmrix.loconet.LnTrafficController.instance()
-my_LnTrafContInstance_S.addLocoNetListener(0xFF,MyLnListener_S())
+myLocoNetConnection_S.getLnTrafficController().addLocoNetListener(0xFF,MyLnListener_S())
+
 
 
 def whenResetButtonClicked_S(event) :
@@ -137,7 +146,8 @@ def sendLoconetMsg_S(msgLength,opcode,ARG1,ARG2,ARG3,ARG4,ARG5,ARG6,ARG7,ARG8,AR
      packet.setElement(13, ARG13)
      packet.setElement(14, ARG14)
      packet.setElement(15, ARG15)   
-     jmri.jmrix.loconet.LnTrafficController.instance().sendLocoNetMessage(packet)
+     jmri.InstanceManager.getList(jmri.jmrix.loconet.LocoNetSystemConnectionMemo).get(connectionIndex).getLnTrafficController().sendLocoNetMessage(packet)
+
      return
 
 resetButton_S = javax.swing.JButton("RESET ALL DEVICE STATUS COUNTERS")
