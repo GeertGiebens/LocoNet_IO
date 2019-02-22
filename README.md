@@ -123,6 +123,8 @@ For the communication with LocoNet bus I use hardware inside de microcontroller.
 
 * To avoid collisions to the minimum (access times lower than 2µs), the software resets the baud rate generator 60μs just before the transmitter starts transmitting 0x77 --> register: SPBRG (only if LocoNet is IDLE).
 
+* I use the internal oscillator and no crystal. So far I have already connected several μC to LocoNet without communication problem. Should this ever occur, then provide a solution via the software.
+
  
 
 ## There are 2 interrupts in the communication part of LocoNet:
