@@ -1,6 +1,6 @@
 # LocoNet_IO
 
-under construction for 18F4620 µC (last update: 20 December/2018)
+under construction for 18F4620 µC (last update: 13/Mrt/2019)
 
 
 > !!! My native language is not English. I hope I made the explanation how it work clear enough. !!!
@@ -93,7 +93,12 @@ Each output function has various parameters, later more about it. Outputs with R
 >
 >https://github.com/GeertGiebens/LocoNet_IO/blob/master/Loconet%20in-out%20v3.brd
 >https://github.com/GeertGiebens/LocoNet_IO/blob/master/Loconet%20in-out%20v3.sch
- 
+
+I am now working on a multifunctional PCB for LocoNet applications. More on this later.
+
+<img alt="open opps 1" src=https://github.com/GeertGiebens/LocoNet_IO/blob/master/LocoNet V6 PCB koperbaan.png> 
+
+<img alt="open opps 1" src=https://github.com/GeertGiebens/LocoNet_IO/blob/master/LocoNet V6 PCB componenten.png> 
   
   # Software:
   
