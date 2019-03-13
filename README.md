@@ -96,9 +96,9 @@ Each output function has various parameters, later more about it. Outputs with R
 
 I am now working on a multifunctional PCB for LocoNet applications. More on this later.
 
-<img alt="open opps 1" src=https://github.com/GeertGiebens/LocoNet_IO/blob/master/LocoNet V6 PCB koperbaan.png> 
+<img alt="open opps 1" src=https://github.com/GeertGiebens/LocoNet_IO/blob/master/LocoNet%20V6%20PCB%20koperbaan.png> 
 
-<img alt="open opps 1" src=https://github.com/GeertGiebens/LocoNet_IO/blob/master/LocoNet V6 PCB componenten.png> 
+<img alt="open opps 1" src=https://github.com/GeertGiebens/LocoNet_IO/blob/master/LocoNet%20V6%20PCB%20componenten.png> 
   
   # Software:
   
