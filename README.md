@@ -99,7 +99,7 @@ I am now working on a multifunctional PCB for LocoNet applications.
 
 <img alt="open opps 1" src=https://github.com/GeertGiebens/LocoNet_IO/blob/master/Testopstelling%20met%20componenten%20LocoNet%20IO%20V6p0.png>
 
->[the electronic scheme of the latest design] (https://github.com/GeertGiebens/LocoNet_IO/blob/master/Schema%20LocoNet%20IO%20V6p3.png)
+>[the electronic scheme of the latest design](https://github.com/GeertGiebens/LocoNet_IO/blob/master/Schema%20LocoNet%20IO%20V6p3.png)
 >
 >[Explanation options PCB](https://github.com/GeertGiebens/LocoNet_IO/blob/master/Basiscomponenten%20en%20voeding%20PCB.pdf)
 >
