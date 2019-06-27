@@ -76,24 +76,6 @@ Each output function has various parameters, later more about it. Outputs with R
 
 # PCB:
  
-[Photo first test version](https://github.com/GeertGiebens/LocoNet_IO/blob/master/LocoNet_IO_testopstelling.png)
-
-[Hardware on stripboard](https://github.com/GeertGiebens/LocoNet_IO/blob/master/PCB%20LOCONET%20II.png)
- 
-[Back side stripboard](https://github.com/GeertGiebens/LocoNet_IO/blob/master/LOCONET%20IO%20Stripboard%20backside.png)
-  
-[Photo stripboard](https://github.com/GeertGiebens/LocoNet_IO/blob/master/LocoNet%20foto%20PCB.png)
-
-
->[Photo PCB V3 cupperside](https://github.com/GeertGiebens/LocoNet_IO/blob/master/LocoNet_IO%20Print%20V3%20koperzijd.jpg)
->
->[Photo PCB V3 componentside](https://github.com/GeertGiebens/LocoNet_IO/blob/master/LocoNet_IO%20Print%20V3%20bovenzijde.jpg)
->
->Eagle files:
->
->https://github.com/GeertGiebens/LocoNet_IO/blob/master/Loconet%20in-out%20v3.brd
->https://github.com/GeertGiebens/LocoNet_IO/blob/master/Loconet%20in-out%20v3.sch
-
 I am now working on a multifunctional PCB for LocoNet applications.
 
 
@@ -103,7 +85,7 @@ I am now working on a multifunctional PCB for LocoNet applications.
 >
 >[Explanation options PCB](https://github.com/GeertGiebens/LocoNet_IO/blob/master/Basiscomponenten%20en%20voeding%20PCB.pdf)
 >
->[PCB gerber files 100mm / 80mm (ZIP format)](https://github.com/GeertGiebens/LocoNet_IO/blob/master/Loconet%20in-out%20v6p3_PCB.zip)
+>[PCB gerber files 100mm/80mm  2 layers (ZIP format)](https://github.com/GeertGiebens/LocoNet_IO/blob/master/Loconet%20in-out%20v6p3_PCB.zip)
   
   # Software:
   
