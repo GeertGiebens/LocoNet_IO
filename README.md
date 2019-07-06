@@ -88,7 +88,7 @@ I am now working on a multifunctional PCB for LocoNet applications.
 >
 >[PCB gerber files 100mm/80mm  2 layers (ZIP format)](https://github.com/GeertGiebens/LocoNet_IO/blob/master/Loconet%20in-out%20v6p3_PCB.zip)
 >
->[Next version (in test)](https://github.com/GeertGiebens/LocoNet_IO/blob/master/PCB_LocoNet_V6p4.png)
+>[Next version (in test)](https://github.com/GeertGiebens/LocoNet_IO/blob/master/PCB_LocoNet_IO_V6p4.png)
   
   # Software:
   
