@@ -86,7 +86,7 @@ I am now working on a multifunctional PCB for LocoNet applications.
 >
 >[Explanation options PCB](https://github.com/GeertGiebens/LocoNet_IO/blob/master/Basiscomponenten%20en%20voeding%20PCB.pdf)
 >
->[PCB gerber files 100mm/80mm  2 layers (ZIP format)](https://github.com/GeertGiebens/LocoNet_IO/blob/master/Loconet%20in-out%20v6p3_PCB.zip)
+>[PCB gerber files 100mm/80mm  2 layers (ZIP format)](https://github.com/GeertGiebens/LocoNet_IO/blob/master/Loconet%20in-out%20v6p3_2019-06-25.zip)
 >
 >[Next version (in test). With additional options for connecting flat cable and better cooling 7805.](https://github.com/GeertGiebens/LocoNet_IO/blob/master/PCB_LocoNet_IO_V6p4.png)
   
