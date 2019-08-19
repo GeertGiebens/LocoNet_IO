@@ -1,6 +1,6 @@
 # LocoNet_IO
 
-Under construction for 18F4620 µC (last update: 4/jul/2019)
+Under construction for 18F4620 µC (last update: 19/aug/2019)
 --> I am now working on an improved version of assembler and python software. The PCB will also be improved.
 
 
