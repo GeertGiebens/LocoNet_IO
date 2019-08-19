@@ -84,7 +84,7 @@ I am now working on a multifunctional PCB for LocoNet applications.
 
 >[the electronic scheme of the latest design](https://github.com/GeertGiebens/LocoNet_IO/blob/master/LocoNet%20schema%20V6p5.png)
 >
->[Explanation options PCB](https://github.com/GeertGiebens/LocoNet_IO/blob/master/Basiscomponenten%20en%20voeding%20PCB.pdf)
+>[Explanation options PCB](https://github.com/GeertGiebens/LocoNet_IO/blob/master/Basiscomponenten%20en%20voeding%20PCB%20v6p5.pdf)
 >
 >[PCB gerber files 100mm/100mm  2 layers (ZIP format)](https://github.com/GeertGiebens/LocoNet_IO/blob/master/Loconet%20in-out%20v6p5_2019-08-18.zip)
 >
