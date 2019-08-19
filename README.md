@@ -11,7 +11,7 @@ Under construction for 18F4620 µC (last update: 19/aug/2019)
 >
 > The goal of this project is a simple LocoNet device for 30 Inputs/Outputs. You can choose for every port which function these have.  I shall explain how simple it is to upload the HEX code in the PIC µC (later). I shall explain how you can set up the function of the port with a JMRI Python script:
 >
->https://github.com/GeertGiebens/LocoNet_IO/blob/master/LocoNet%20IO%20V6p1.py
+>https://github.com/GeertGiebens/LocoNet_IO/blob/master/LocoNet%20IO%20V1p61.py
 >
 ><img alt="open opps 1" src=https://github.com/GeertGiebens/LocoNet_IO/blob/master/JMRI%20Python%20LocoNet%20IO%20program%20tool%20v1p51_picture2.png>
 >
