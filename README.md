@@ -15,8 +15,6 @@ Under construction for 18F4620 µC (last update: 19/aug/2019)
 >
 ><img alt="open opps 1" src=https://github.com/GeertGiebens/LocoNet_IO/blob/master/JMRI%20Python%20LocoNet%20IO%20program%20tool%20v1p51_picture2.png>
 >
-><img alt="open opps 1" src=https://github.com/GeertGiebens/LocoNet_IO/blob/master/JMRI%20Python%20LocoNet%20IO%20program%20tool%20v1p51_picture1.png>
->
 > The settings menu provides sufficient information during use. This by giving information when you use the computer mouse over the choice of settings. This is only a basic version, later it will certainly be extended.
 >
 
